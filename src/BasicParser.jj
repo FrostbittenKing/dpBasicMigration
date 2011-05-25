@@ -24,14 +24,56 @@ SKIP : /* WHITE SPACE */
 
 TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 {
- 	<FOR: "for" | "FOR">
+	<BRIGHT: "bright" | "BRIGHT">
+|	<CLEAR:  "clear"  | "CLEAR">
+|	<CLOAD:	 "cload" | "CLOAD">
+|	<CLOAD*: "cload*" | "CLOAD*">
+|	<CLOADA: "cloada" | "CLOADA">
+|	<CLOAD?: "cload?" | "CLOAD?">
+|	<CONT: "cont" | "CONT">
+|	<CURSORX: "cursorx" | "CURSORX">
+|	<CURSORY: "cursory" | "CURSORY">
+|	<CSAVE: "csave" | "CSAVE">
+|	<CSAVEM: "csavem" | "CSAVEM">
+|	<CSAVEL: "csavel" | "CSAVEL">
+|	<CSAVES: "csaves" | "CSAVES">
+|	<CSAVE*: "csave*" | "CSAVE*">
+|	<CSAVEX: "csavex" | "CSAVEX">
+|	<DATA:	 "data" | "DATA">
+|	<DELIM:	 "delim" | "DELIM">
+|	<DIM: "dim" | "DIM">
+|	<DISPLAY: "display | "DISPLAY">
+|	<END: "end" | "END">
+| 	<FOR: "for" | "FOR">
+|	<GOSUB: "gosub" | "GOSUB">
 | 	<GOTO: "goto" | "GOTO">
+|	<GR: "gr" | "GR">
 | 	<IF: "if" | "IF">
+|	<INIT: "init" | "INIT">
+|	<INPUT: "input" | "INPUT">
+|	<LET:	"let" | "LET">
+|	<LINE:	"line" | "LINE">
+|	<LIST:	"list" | "LIST">
+|	<NEW:	"new" | "NEW">
 | 	<NEXT: "next" | "NEXT">
+|	<ON:   "on" | "ON">
+|	<PAGE: "page" | "PAGE">
+|	<POKE: "poke" | "POKE">
 | 	<PRINT: "?" | "print" | "PRINT">
+|	<READ:	"read" | "READ">
+|	<REM:	"rem" | "REM">
+|	<RESTORE:     "restore" | "RESTORE">
+|	<RETURN: "return" | "RETURN">
+|	<RUN:	 "run" | "RUN">
+|	<SCREEN: "screen" | "SCREEN">
+|	<SCROLL: "scroll" | "SCROLL">
+|	<SOUND: "sound" | "SOUND">
 | 	<STEP: "step" | "STEP"> 
+|	<STOP: "stop" | "STOP">
+|	<STORE: "store" | "STORE">
 | 	<THEN: "then" | "THEN">
 | 	<TO: "to" | "TO"> 	
+|	<TX: "tx" | "TX">
 }
 
 TOKEN: /* LITERALS */
