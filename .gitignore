@@ -11,4 +11,5 @@
 #ooo lockfiles
 .~lock*
 src/java-gen/*
+src/bin
 !.gitignore

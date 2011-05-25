@@ -4,7 +4,7 @@ public
 class ASTforLoopStatement extends SimpleNode {
     
     public String toString() {
-	return "lol"
+	return "lol";
     }
 
     public ASTforLoopStatement(int id) {
