@@ -10,3 +10,5 @@
 
 #ooo lockfiles
 .~lock*
+src/java-gen/*
+!.gitignore

@@ -1,3 +1,8 @@
+options {
+	MULTI = true;
+	OUTPUT_DIRECTORY="./java-gen";
+}
+
 PARSER_BEGIN(BasicParser)
 
 /** Simple brace matcher. */
@@ -27,9 +32,9 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 	<BRIGHT: "bright" | "BRIGHT">
 |	<CLEAR:  "clear"  | "CLEAR">
 |	<CLOAD:	 "cload" | "CLOAD">
-|	<CLOAD*: "cload*" | "CLOAD*">
+|	<CLOADAST: "cload*" | "CLOAD*">
 |	<CLOADA: "cloada" | "CLOADA">
-|	<CLOAD?: "cload?" | "CLOAD?">
+|	<CLOADQEST: "cload?" | "CLOAD?">
 |	<CONT: "cont" | "CONT">
 |	<CURSORX: "cursorx" | "CURSORX">
 |	<CURSORY: "cursory" | "CURSORY">
@@ -37,12 +42,12 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 |	<CSAVEM: "csavem" | "CSAVEM">
 |	<CSAVEL: "csavel" | "CSAVEL">
 |	<CSAVES: "csaves" | "CSAVES">
-|	<CSAVE*: "csave*" | "CSAVE*">
+|	<CSAVEAST: "csave*" | "CSAVE*">
 |	<CSAVEX: "csavex" | "CSAVEX">
 |	<DATA:	 "data" | "DATA">
 |	<DELIM:	 "delim" | "DELIM">
 |	<DIM: "dim" | "DIM">
-|	<DISPLAY: "display | "DISPLAY">
+|	<DISPLAY: "display" | "DISPLAY">
 |	<END: "end" | "END">
 | 	<FOR: "for" | "FOR">
 |	<GOSUB: "gosub" | "GOSUB">
@@ -74,6 +79,39 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 | 	<THEN: "then" | "THEN">
 | 	<TO: "to" | "TO"> 	
 |	<TX: "tx" | "TX">
+}
+
+TOKEN: /* BASIC LANGUAGE FUNCTIONS */
+{
+	<ABS:	"abs" | "ABS">
+|	<ACTION:      "action" | "ACTION">
+|	<ASC:	"asc" | "ASC">
+|	<ATN:	"atn" | "ATN">
+|	<CHR$:	"chr$" | "CHR$">
+|	<COS:	"cos"  | "COS">
+|	<EXP:	"exp"  | "EXP">
+|	<FRE:	"fre"  | "FRE">
+|	<INT:	"int"  | "INT">
+|	<LEFT$:	"left$"	 | "LEFT$">
+|	<LEN:	"len" | "LEN">
+|	<LOG:	"log" | "LOG">
+|	<MID$:	"mid$"	| "MID$">
+|	<PEEK:	"peek"	| "PEEK">
+|	<POS:	"pos"	| "POS">
+|	<RIGHT$:    "right$"  | "RIGHT$">
+|	<RND:	"rnd"	| "RND">
+|	<SGN:	"sgn"	| "SGN">
+|	<SIN:	"sin"	| "SIN">
+|	<SPC:	"spc"	| "SPC">
+|	<SQR:	"sqr"	| "SQR">
+|	<STR:	"str"	| "STR">
+|	<STICKX: "stickx" | "STICKX">
+|	<STICKY: "sticky" | "STICKY">
+|	<TAB:	 "tab"	  | "TAB">
+|	<TAN:	 "tan"	  | "TAN">
+|	<USR:	 "usr"	  | "USR">
+|	<VAL:	 "val"	  | "VAL">
+|	<KEY:	 "key"	  | "KEY">
 }
 
 TOKEN: /* LITERALS */
