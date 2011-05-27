@@ -29,10 +29,35 @@ SKIP : /* WHITE SPACE */
 {
   " "
 | "\t"
-| "\n"
 | "\r"
 | "\f"
+| "\n"
 }
+
+
+
+MORE : { <COMMENT: <INTEGER_LITERAL> ([" "])+ <REM>> : COMMENT_MODE }
+
+<LINE_START>
+MORE :
+{
+	<([" "])+ <REM>> : COMMENT_MODE
+}
+
+
+<COMMENT_MODE>
+SPECIAL_TOKEN :
+{
+	<END_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<COMMENT_MODE>
+MORE:
+{
+	<~[]>
+}
+
+
 
 TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 {
@@ -89,6 +114,7 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 | 	<TO: "to" | "TO"> 	
 |	<TX: "tx" | "TX">
 }
+
 
 TOKEN: /* BASIC LANGUAGE FUNCTIONS */
 {
@@ -180,6 +206,7 @@ void parseCommand():
 /*(ifStatement() | gotoStatement() | forLoopStatement() | printStatement())*/
 }
 
+
 void Expression() :
 {}
 {
@@ -268,12 +295,14 @@ void Literal() :
 	<STRING_LITERAL>
 }
 
-void Statement() :
+void Statement() #void:
 {}
 {
+	(
 	assignmentStatement()
 |	ifStatement()
 |	gotoStatement()	
+	) #Statement
 }
 
 void assignmentStatement():
@@ -291,7 +320,7 @@ void ifStatement():
 	(
 		<THEN> 	Statement() 
 		       | 
-		<GOTO> lineNumber()
+		gotoStatement()
 	)
 }
 
@@ -311,14 +340,16 @@ void gotoStatement() :
 {
 }
 {
-	<GOTO> lineNumber()
+	<GOTO> <INTEGER_LITERAL>
 }
-
+/*
 void lineNumber() :
 {}
 {
 	<INTEGER_LITERAL>
-}
+}*/
+
+
 
 
 /* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */ 
