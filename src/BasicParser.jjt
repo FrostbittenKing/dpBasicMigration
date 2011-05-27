@@ -11,9 +11,16 @@ public class BasicParser {
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
     BasicParser parser = new BasicParser(System.in);
-    parser.parseRoot();
+    try {
+    ASTparseRoot r =  parser.parseRoot();
+    r.dump(">");
   }
-
+  catch (Exception e) {
+  	System.out.println("Oops.");
+      	System.out.println(e.getMessage());
+      	e.printStackTrace();
+	}
+     }
 }
 
 PARSER_END(BasicParser)
@@ -29,7 +36,8 @@ SKIP : /* WHITE SPACE */
 
 TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 {
-	<BRIGHT: "bright" | "BRIGHT">
+	<AND:	"and" | "AND">
+|	<BRIGHT: "bright" | "BRIGHT">
 |	<CLEAR:  "clear"  | "CLEAR">
 |	<CLOAD:	 "cload" | "CLOAD">
 |	<CLOADAST: "cload*" | "CLOAD*">
@@ -62,6 +70,7 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 |	<NEW:	"new" | "NEW">
 | 	<NEXT: "next" | "NEXT">
 |	<ON:   "on" | "ON">
+|	<OR:   "or" | "OR">
 |	<PAGE: "page" | "PAGE">
 |	<POKE: "poke" | "POKE">
 | 	<PRINT: "?" | "print" | "PRINT">
@@ -116,56 +125,209 @@ TOKEN: /* BASIC LANGUAGE FUNCTIONS */
 
 TOKEN: /* LITERALS */
 {
-	<NUM: ( ["0"-"9"] )+>
+	<INTEGER_LITERAL: ["1"-"9"] ( ["0"-"9"] )*>
+|	<FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])+>
+|	<STRING_LITERAL: "\"" (~["\n","\r"])* "\"">
 /*|	<EXPRESSION: [ */
 /*| <VAR: "*"+> */
 }
 
+TOKEN: /*IDENTIFIER*/
+{
+	<IDENTIFIER: <LETTER> (<PART_LETTER>)* ("$")?>
+|	<#LETTER: [ "A"-"Z","a"-"z"]>
+|	<#PART_LETTER: [ "A"-"Z","a"-"z", "0"-"9" ]>
+}
+
+/* SEPARATORS */
+TOKEN :
+{
+	<LPAREN: "(">
+|	<RPAREN: ")">
+|	<SEMICOLON: ";">
+|	<COMMA: ",">
+
+}
+
+/* OPERATORS */
+TOKEN :
+{
+	<ASSIGN: "=">
+|	<GT: ">">
+|	<LT: "<">
+|	<COLON: ":">
+|	<LE: "<=">
+|	<GE: ">=">
+|	<PLUS: "+">
+|	<MINUS:	"-">
+|	<STAR: "*">
+|	<SLASH: "/">
+|	<CIRCUMFLEX: "^">
+}
+
 /** Root production. */
-void parseRoot():
+ASTparseRoot parseRoot():
 {}
 {
 	(parseCommand())* <EOF>
+	{return jjtThis;}
 }
 
 void parseCommand():
 {}
 {
-	<NUM> (ifStatement() | gotoStatement() | forLoopStatement() | printStatement())
+	<INTEGER_LITERAL> Statement()
+/*(ifStatement() | gotoStatement() | forLoopStatement() | printStatement())*/
+}
+
+void Expression() :
+{}
+{
+	(LogicalOrExpression())
+}
+
+void LogicalOrExpression() #void:
+{}
+{
+	(LogicalAndExpression() ( <OR> LogicalAndExpression() )*) #LogicalOr(>1)
+}
+
+void LogicalAndExpression() #void:
+{}
+{
+	(ComparisonExpression() ( <AND> ComparisonExpression() )*) #LogicalAnd(>1)
+}
+
+void ComparisonExpression() #void :
+{}
+{
+	(RelationalExpression() ( ("=") RelationalExpression() )*) #ComparisonExp(>1)
+}
+
+void RelationalExpression() #void:
+{}
+{
+	(AdditiveExpression() ( ("<" | ">" | "<=" | ">=" | "<>") AdditiveExpression() )*) #RelationalExp(>1)
+}
+
+void AdditiveExpression() #void :
+{}
+{
+	(MultiplicativeExpression() ( ("+" | "-") MultiplicativeExpression())*) #Add(>1)	
+}
+
+void MultiplicativeExpression() #void :
+{}
+{
+	(ExponentialExpression() ( ( "*" | "/") ExponentialExpression())*) #Mult(>1)
+}
+
+void ExponentialExpression() #void :
+{}
+{
+	(UnaryExpression() ( "^" UnaryExpression())*) #Exp(>1)
+}
+
+void UnaryExpression() #void :
+{}
+{
+	(PrimaryExpression()
+|	("-") UnaryExpression()) #UnaryExpression(>1)
+}
+
+/** SUBJECT TO CHANGE */
+void PrimaryExpression() #void:
+{}
+{
+	(PrimaryPrefix()) #PrimaryExp(>1)
+}
+
+void PrimaryPrefix() #void:
+{}
+{
+	Literal()
+|	
+	"(" Expression() ")"
+|
+	Name()
+}
+
+void Name() :
+{}
+{
+	<IDENTIFIER>
+}
+
+void Literal() :
+{}
+{
+	<INTEGER_LITERAL>
+|
+	<FLOATING_POINT_LITERAL>
+|	
+	<STRING_LITERAL>
+}
+
+void Statement() :
+{}
+{
+	assignmentStatement()
+|	ifStatement()
+|	gotoStatement()	
+}
+
+void assignmentStatement():
+{}
+{
+	Name() "=" Expression()
 }
 
 /* TODO: missing boolean expression literal */
 void ifStatement():
 {}
 {
-	<IF> /*expression*/ ifThenStatement() | ifGotoStatement()
+	<IF> Expression()  
+	
+	(
+		<THEN> 	Statement() 
+		       | 
+		<GOTO> lineNumber()
+	)
 }
 
 void ifThenStatement():
 {}
 {
-	<NUM> <THEN> parseCommand()
+	<THEN> (Statement())
 }
 
 void ifGotoStatement():
 {}
 {
-	<NUM> gotoStatement()
+	gotoStatement()
 }
 
 void gotoStatement() :
+{
+}
+{
+	<GOTO> lineNumber()
+}
+
+void lineNumber() :
 {}
 {
-	<GOTO> <NUM>
+	<INTEGER_LITERAL>
 }
+
 
 /* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */ 
 void forLoopStatement() :
 {}
 {
-	<FOR> /*var*/ <NUM> <TO> <NUM> (<STEP> <NUM>)?
+	<FOR> /*var*/ <INTEGER_LITERAL> <TO> <INTEGER_LITERAL> (<STEP> <INTEGER_LITERAL>)?
   /*  (parseCommand())* */
-	<NUM> <NEXT> /*var*/
+	<INTEGER_LITERAL> <NEXT> /*var*/
 }
 
 /* TODO: missing text literal */
