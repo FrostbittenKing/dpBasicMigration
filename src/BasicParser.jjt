@@ -1,6 +1,8 @@
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
+	DEBUG_PARSER = true;
+/*	DEBUG_TOKEN_MANAGER = true;*/
 }
 
 PARSER_BEGIN(BasicParser)
@@ -35,14 +37,14 @@ SKIP : /* WHITE SPACE */
 }
 
 
-
 MORE : { <COMMENT: <INTEGER_LITERAL> ([" "])+ <REM>> : COMMENT_MODE }
 
+/*
 <LINE_START>
 MORE :
 {
 	<([" "])+ <REM>> : COMMENT_MODE
-}
+}*/
 
 
 <COMMENT_MODE>
@@ -116,7 +118,7 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 }
 
 
-TOKEN: /* BASIC LANGUAGE FUNCTIONS */
+TOKEN: /* BASIC MATHEMATICAL FUNCTIONS */
 {
 	<ABS:	"abs" | "ABS">
 |	<ACTION:      "action" | "ACTION">
@@ -147,13 +149,15 @@ TOKEN: /* BASIC LANGUAGE FUNCTIONS */
 |	<USR:	 "usr"	  | "USR">
 |	<VAL:	 "val"	  | "VAL">
 |	<KEY:	 "key"	  | "KEY">
+|	<FN:	 "FN"<IDENTIFIER>>
 }
+
 
 TOKEN: /* LITERALS */
 {
-	<INTEGER_LITERAL: ["1"-"9"] ( ["0"-"9"] )*>
+	<INTEGER_LITERAL: ["0"-"9"] ( ["0"-"9"] )*>
 |	<FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])+>
-|	<STRING_LITERAL: "\"" (~["\n","\r"])* "\"">
+|	<STRING_LITERAL: "\"" (~["\n","\r", "\""])* "\"">
 /*|	<EXPRESSION: [ */
 /*| <VAR: "*"+> */
 }
@@ -237,10 +241,11 @@ void RelationalExpression() #void:
 	(AdditiveExpression() ( ("<" | ">" | "<=" | ">=" | "<>") AdditiveExpression() )*) #RelationalExp(>1)
 }
 
+
 void AdditiveExpression() #void :
 {}
 {
-	(MultiplicativeExpression() ( ("+" | "-") MultiplicativeExpression())*) #Add(>1)	
+	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)	
 }
 
 void MultiplicativeExpression() #void :
@@ -259,7 +264,8 @@ void UnaryExpression() #void :
 {}
 {
 	(PrimaryExpression()
-|	("-") UnaryExpression()) #UnaryExpression(>1)
+|	("-") UnaryExpression()
+|	BasicFunctions()) #UnaryExpression(>1)
 }
 
 /** SUBJECT TO CHANGE */
@@ -300,15 +306,81 @@ void Statement() #void:
 {
 	(
 	assignmentStatement()
+|	brightStatement()
+|	clearStatement()
+|	contStatement()
+|	cursorXStatement()
+|	cursorYStatement()
+|	defStatement()
 |	ifStatement()
 |	gotoStatement()	
+|	printStatement()
 	) #Statement
 }
 
+void BasicFunctions() :
+{}
+{
+	Cosine()
+}
+
+void Cosine() :
+{}
+{
+	<COS> <LPAREN> Name() ("," Name())* <RPAREN>
+}
 void assignmentStatement():
 {}
 {
 	Name() "=" Expression()
+}
+
+void brightStatement():
+{}
+{
+	<BRIGHT> <INTEGER_LITERAL>
+}
+
+void clearStatement():
+{}
+{
+	<CLEAR> <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+}
+
+void contStatement():
+{}
+{
+	<CONT>
+}
+
+void cursorXStatement():
+{}
+{
+	<CURSORX> <INTEGER_LITERAL>
+}
+
+void cursorYStatement():
+{}
+{
+	<CURSORY> <INTEGER_LITERAL>
+}
+
+void functionDefName():
+{}
+{
+	<FN>
+}
+
+void defStatement():
+{}
+{
+	functionDefName() (<LPAREN> Name() ("," Name())* <RPAREN>)? functionDefBody()
+}
+
+void functionDefBody():
+{}
+{
+	"=" AdditiveExpression()
 }
 
 /* TODO: missing boolean expression literal */
@@ -365,5 +437,12 @@ void forLoopStatement() :
 void printStatement() :
 {}
 {
-	<PRINT> /*text*/
+	<PRINT> printText() ("," printText())*
+}
+
+void printText() :
+{}
+{ (
+	LOOKAHEAD(2)
+	Expression())*
 }
