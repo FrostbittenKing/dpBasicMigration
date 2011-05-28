@@ -304,16 +304,26 @@ void Literal() :
 void Statement() #void:
 {}
 {
-	(
-	assignmentStatement()
-|	brightStatement()
+	(brightStatement()
 |	clearStatement()
 |	contStatement()
 |	cursorXStatement()
 |	cursorYStatement()
 |	defStatement()
+|	delimStatement()
+|	dimStatement()
+|	displayStatement()
+|	endStatement()
 |	ifStatement()
+|	gosubStatement()
 |	gotoStatement()	
+|	grStatement()
+|	initStatement()
+|	inputStatement()
+|	letStatement()
+|	lineStatement()
+|	listStatement()
+|	newStatement()
 |	printStatement()
 	) #Statement
 }
@@ -328,11 +338,6 @@ void Cosine() :
 {}
 {
 	<COS> <LPAREN> Name() ("," Name())* <RPAREN>
-}
-void assignmentStatement():
-{}
-{
-	Name() "=" Expression()
 }
 
 void brightStatement():
@@ -383,6 +388,57 @@ void functionDefBody():
 	"=" AdditiveExpression()
 }
 
+void delimStatement():
+{}
+{
+	<DELIM>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+}
+
+void dimStatement():
+{}
+{
+	<DIM>	<LPAREN> <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* <RPAREN>
+}
+
+void displayStatement():
+{}
+{
+	<DISPLAY>
+}
+
+void endStatement():
+{}
+{
+	<END>
+}
+
+void gosubStatement() :
+{}
+{
+	<GOSUB>	<INTEGER_LITERAL>
+}
+
+void returnStatement():
+{}
+{
+	<RETURN>
+}	
+
+void grStatement() :
+{}
+{
+	<GR>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+}
+
+
+
+void gotoStatement() :
+{
+}
+{
+	<GOTO> <INTEGER_LITERAL>
+}
+
 /* TODO: missing boolean expression literal */
 void ifStatement():
 {}
@@ -408,11 +464,41 @@ void ifGotoStatement():
 	gotoStatement()
 }
 
-void gotoStatement() :
+void initStatement():
+{}
 {
+	<INIT>	<INTEGER_LITERAL>
 }
+
+void inputStatement():
+{}
 {
-	<GOTO> <INTEGER_LITERAL>
+	<INPUT> (<STRING_LITERAL>)* <SEMICOLON> Name() ( "," Name())*
+}
+
+void letStatement():
+{}
+{
+	(<LET>)? Name() <ASSIGN> Expression()
+}
+
+void lineStatement():
+{}
+{
+	<LINE> <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+}
+
+void listStatement():
+{}
+{
+	<LIST>	( 
+	LOOKAHEAD (2, <INTEGER_LITERAL> <INTEGER_LITERAL>) <INTEGER_LITERAL>)?
+}
+
+void newStatement():
+{}
+{
+	<NEW>
 }
 /*
 void lineNumber() :
