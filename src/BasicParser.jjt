@@ -2,6 +2,7 @@ options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
 	DEBUG_PARSER = true;
+	DEBUG_LOOKAHEAD = true;
 /*	DEBUG_TOKEN_MANAGER = true;*/
 }
 
@@ -285,6 +286,22 @@ void PrimaryPrefix() #void:
 	Name()
 }
 
+void Variable() :
+{}
+{
+	LOOKAHEAD(2)
+	Array()
+	|
+	Name()
+	
+}
+
+void Array() :
+{}
+{
+	Name() <LPAREN> <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* <RPAREN>
+}
+
 void Name() :
 {}
 {
@@ -324,7 +341,19 @@ void Statement() #void:
 |	lineStatement()
 |	listStatement()
 |	newStatement()
+|	onStatement()
+|	pageStatement()
 |	printStatement()
+|	readStatement()
+|	dataStatement()
+|	restoreStatement()
+|	runStatement()
+|	screenStatement()
+|	scrollStatement()
+|	soundStatement()
+|	stopStatement()
+|	storeStatement()
+|	txStatement()
 	) #Statement
 }
 
@@ -397,8 +426,10 @@ void delimStatement():
 void dimStatement():
 {}
 {
-	<DIM>	<LPAREN> <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* <RPAREN>
+	<DIM> Array()
 }
+
+
 
 void displayStatement():
 {}
@@ -500,6 +531,72 @@ void newStatement():
 {
 	<NEW>
 }
+
+void onStatement():
+{}
+{
+	<ON> Expression() ( <GOTO> | <GOSUB>) <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* 
+}
+
+void	pageStatement():
+{}
+{
+	<PAGE>
+}
+
+
+void	readStatement():
+{}
+{
+	<READ> Variable() ( "," Variable())*	
+}
+void	dataStatement():
+{}
+{
+	<DATA> (Literal() | Name()) ( "," (Literal() | Name()))*
+}
+void	restoreStatement():
+{}
+{
+	<RESTORE> <INTEGER_LITERAL>
+}
+void	runStatement():
+{}
+{
+	<RUN>	<INTEGER_LITERAL>
+}
+
+void	screenStatement():
+{}
+{
+	<SCREEN>
+}
+void	scrollStatement():
+{}
+{
+	<SCROLL>
+}
+void	soundStatement():
+{}
+{
+	<SOUND> <INTEGER_LITERAL>
+}
+void	stopStatement():
+{}
+{
+	<STOP>
+}
+void	storeStatement():
+{}
+{
+	<STORE>
+}
+void	txStatement():
+{}
+{
+	<TX> <INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+}
+
 /*
 void lineNumber() :
 {}
