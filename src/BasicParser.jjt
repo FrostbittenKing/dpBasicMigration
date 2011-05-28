@@ -1,8 +1,8 @@
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
-	DEBUG_PARSER = true;
-	DEBUG_LOOKAHEAD = true;
+/*	DEBUG_PARSER = true;
+	DEBUG_LOOKAHEAD = true;*/
 /*	DEBUG_TOKEN_MANAGER = true;*/
 }
 
@@ -34,7 +34,6 @@ SKIP : /* WHITE SPACE */
 | "\t"
 | "\r"
 | "\f"
-| "\n"
 }
 
 
@@ -200,14 +199,20 @@ TOKEN :
 ASTparseRoot parseRoot():
 {}
 {
-	(parseCommand())* <EOF>
+	(parseCommand() "\n" )* <EOF>
 	{return jjtThis;}
+}
+
+void lineNumber():
+{}
+{
+	<INTEGER_LITERAL>
 }
 
 void parseCommand():
 {}
 {
-	<INTEGER_LITERAL> Statement()
+	lineNumber() Statement() (":" Statement())*
 /*(ifStatement() | gotoStatement() | forLoopStatement() | printStatement())*/
 }
 
@@ -283,7 +288,7 @@ void PrimaryPrefix() #void:
 |	
 	"(" Expression() ")"
 |
-	Name()
+	Variable()
 }
 
 void Variable() :
@@ -331,15 +336,17 @@ void Statement() #void:
 |	dimStatement()
 |	displayStatement()
 |	endStatement()
-|	ifStatement()
+|	forLoopStatement()
 |	gosubStatement()
 |	gotoStatement()	
 |	grStatement()
+|	ifStatement()
 |	initStatement()
 |	inputStatement()
 |	letStatement()
 |	lineStatement()
 |	listStatement()
+|	nextStatement()
 |	newStatement()
 |	onStatement()
 |	pageStatement()
@@ -357,16 +364,50 @@ void Statement() #void:
 	) #Statement
 }
 
+void functionParameters() :
+{}
+{
+	<LPAREN> Expression() ("," Expression())* <RPAREN>
+}
+
 void BasicFunctions() :
 {}
 {
-	Cosine()
+	Asc()
+|	Cosine()
+|	Chr()
+|	Int()
+|	Rnd()
+}
+
+void Asc() :
+{}
+{
+	<ASC> functionParameters()
 }
 
 void Cosine() :
 {}
 {
-	<COS> <LPAREN> Name() ("," Name())* <RPAREN>
+	<COS> functionParameters()
+}
+
+void Chr() :
+{}
+{
+	<CHR$> functionParameters()
+}
+
+void Int() :
+{}
+{
+	<INT> functionParameters()
+}
+
+void Rnd() :
+{}
+{
+	<RND> functionParameters()
 }
 
 void brightStatement():
@@ -396,7 +437,7 @@ void cursorXStatement():
 void cursorYStatement():
 {}
 {
-	<CURSORY> <INTEGER_LITERAL>
+	<CURSORY> lineNumber()
 }
 
 void functionDefName():
@@ -446,7 +487,7 @@ void endStatement():
 void gosubStatement() :
 {}
 {
-	<GOSUB>	<INTEGER_LITERAL>
+	<GOSUB>	lineNumber()
 }
 
 void returnStatement():
@@ -467,7 +508,7 @@ void gotoStatement() :
 {
 }
 {
-	<GOTO> <INTEGER_LITERAL>
+	<GOTO> lineNumber()
 }
 
 /* TODO: missing boolean expression literal */
@@ -477,12 +518,12 @@ void ifStatement():
 	<IF> Expression()  
 	
 	(
-		<THEN> 	Statement() 
+		<THEN> 	( Statement() | lineNumber()) 
 		       | 
 		gotoStatement()
 	)
 }
-
+/*
 void ifThenStatement():
 {}
 {
@@ -494,7 +535,7 @@ void ifGotoStatement():
 {
 	gotoStatement()
 }
-
+*/
 void initStatement():
 {}
 {
@@ -504,7 +545,7 @@ void initStatement():
 void inputStatement():
 {}
 {
-	<INPUT> (<STRING_LITERAL>)* <SEMICOLON> Name() ( "," Name())*
+	<INPUT> (<STRING_LITERAL> <SEMICOLON>)? Name() ( "," Name())*
 }
 
 void letStatement():
@@ -516,14 +557,14 @@ void letStatement():
 void lineStatement():
 {}
 {
-	<LINE> <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+	<LINE> lineNumber() "," <INTEGER_LITERAL>
 }
 
 void listStatement():
 {}
 {
 	<LIST>	( 
-	LOOKAHEAD (2, <INTEGER_LITERAL> <INTEGER_LITERAL>) <INTEGER_LITERAL>)?
+	LOOKAHEAD (2, lineNumber()) lineNumber())?
 }
 
 void newStatement():
@@ -535,7 +576,7 @@ void newStatement():
 void onStatement():
 {}
 {
-	<ON> Expression() ( <GOTO> | <GOSUB>) <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* 
+	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())* 
 }
 
 void	pageStatement():
@@ -558,12 +599,13 @@ void	dataStatement():
 void	restoreStatement():
 {}
 {
-	<RESTORE> <INTEGER_LITERAL>
+	<RESTORE> (
+	LOOKAHEAD(2) lineNumber())?
 }
 void	runStatement():
 {}
 {
-	<RUN>	<INTEGER_LITERAL>
+	<RUN>	(LOOKAHEAD(2) lineNumber())?
 }
 
 void	screenStatement():
@@ -611,9 +653,13 @@ void lineNumber() :
 void forLoopStatement() :
 {}
 {
-	<FOR> /*var*/ <INTEGER_LITERAL> <TO> <INTEGER_LITERAL> (<STEP> <INTEGER_LITERAL>)?
-  /*  (parseCommand())* */
-	<INTEGER_LITERAL> <NEXT> /*var*/
+	<FOR> Variable() <ASSIGN> <INTEGER_LITERAL> <TO> <INTEGER_LITERAL> (<STEP> <INTEGER_LITERAL>)?
+}
+
+void nextStatement() :
+{}
+{
+	<NEXT> Variable()
 }
 
 /* TODO: missing text literal */
@@ -627,5 +673,5 @@ void printText() :
 {}
 { (
 	LOOKAHEAD(2)
-	Expression())*
+	Expression() (<SEMICOLON>)?)*
 }
