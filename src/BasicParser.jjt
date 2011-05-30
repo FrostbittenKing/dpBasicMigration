@@ -1,9 +1,9 @@
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
-/*	DEBUG_PARSER = true;
-	DEBUG_LOOKAHEAD = true;*/
-/*	DEBUG_TOKEN_MANAGER = true;*/
+/*	DEBUG_PARSER = true;*/
+/*	DEBUG_LOOKAHEAD = true;
+	DEBUG_TOKEN_MANAGER = true;*/
 }
 
 PARSER_BEGIN(BasicParser)
@@ -164,7 +164,8 @@ TOKEN: /* LITERALS */
 
 TOKEN: /*IDENTIFIER*/
 {
-	<IDENTIFIER: <LETTER> (<PART_LETTER>)* ("$")?>
+	<NUMERIC_IDENTIFIER: <LETTER> (<PART_LETTER>)*>
+|	<IDENTIFIER: <NUMERIC_IDENTIFIER>"$">
 |	<#LETTER: [ "A"-"Z","a"-"z"]>
 |	<#PART_LETTER: [ "A"-"Z","a"-"z", "0"-"9" ]>
 }
@@ -175,7 +176,7 @@ TOKEN :
 	<LPAREN: "(">
 |	<RPAREN: ")">
 |	<SEMICOLON: ";">
-|	<COMMA: ",">
+|	<COMMA: (",")>
 
 }
 
@@ -297,20 +298,32 @@ void Variable() :
 	LOOKAHEAD(2)
 	Array()
 	|
-	Name()
+	SimpleVariable()
 	
 }
 
-void Array() :
+void SimpleVariable() :
 {}
 {
-	Name() <LPAREN> <INTEGER_LITERAL> ("," <INTEGER_LITERAL>)* <RPAREN>
+	Name()
+}
+
+void Array() :
+{
+	Token t;
+}
+{
+	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);})* <RPAREN>
 }
 
 void Name() :
-{}
 {
-	<IDENTIFIER>
+	Token t;
+}
+{
+	t=<IDENTIFIER>
+	|
+	t=<NUMERIC_IDENTIFIER>
 }
 
 void Literal() :
@@ -364,50 +377,262 @@ void Statement() #void:
 	) #Statement
 }
 
-void functionParameters() :
+void NumericExpressionParameter() :
 {}
 {
-	<LPAREN> Expression() ("," Expression())* <RPAREN>
+	<LPAREN> Expression() <RPAREN>
+}
+
+/*
+void ParameterDeclaration(int count) :
+{}
+{
+	<LPAREN> Parameter() ( "," Parameter())* <RPAREN>
+}
+*/
+
+JAVACODE
+void ParameterDeclaration(int count) {
+     Token tok;
+     tok = getToken(1);
+     if (tok.kind != LPAREN)
+     	throw new ParseException("Encountered, " + tok.image + ", but was expecting " + "\"(\"");
+     getNextToken();
+     if (count == 0) {
+     	VariableLengthParameter();
+     }
+     else {
+        Parameter();
+     	for (int i=1 ; i < count ; i++) {
+            tok = getToken(1);
+	    if (tok.kind != COMMA)
+	       throw new ParseException("Encountered, " + tok.image + ", but was expecting " + "\",\"");
+	    getNextToken();
+	    Parameter();	
+      	}
+     }
+     tok = getToken(1);
+     if (tok.kind != RPAREN)
+     	throw new ParseException("Encountered, " + tok.image + ", but was expecting " + "\")\"");
+     getNextToken();
+}
+
+
+void VariableLengthParameter() :
+{}
+{
+     Parameter() ("," Parameter())*
+}
+
+void Parameter() :
+{}
+{
+	LOOKAHEAD(2) Expression() | SimpleVariable() 
 }
 
 void BasicFunctions() :
 {}
-{
-	Asc()
+{	
+	Absolute()
+|	Action()
+|	Atan()
+|	Ascii()
 |	Cosine()
-|	Chr()
-|	Int()
-|	Rnd()
+|	Char()
+|	Exponent()
+|	FreeBytes()
+|	Left()
+|	Length()
+|	Logarithm()
+|	Maxint()
+|	Substring()
+|	Position()
+|	Random()
+|	Right()
+|	Signum()
+|	Sine()
+|	Space()
+|	Squareroot()
+|	StringToInt()
+|	StickX()
+|	StickY()
+|	Tab()
+|	Tangens()
+|	UserProgram()
+|	IntToString()
+|	KeyCharacter()
 }
 
-void Asc() :
+void Absolute() :
 {}
 {
-	<ASC> functionParameters()
+	<ABS> ParameterDeclaration(1)
+}
+
+void Action() :
+{}
+{
+	<ACTION> ParameterDeclaration(1)
+}	
+
+void Ascii() :
+{}
+{
+	<ASC> ParameterDeclaration(1)
+}
+
+void Atan() :
+{}
+{
+	<ATN> ParameterDeclaration(1)
 }
 
 void Cosine() :
 {}
 {
-	<COS> functionParameters()
+	<COS> ParameterDeclaration(1)
 }
 
-void Chr() :
+void Char() :
 {}
 {
-	<CHR$> functionParameters()
+	<CHR$> ParameterDeclaration(1)
 }
 
-void Int() :
+void Exponent() :
 {}
 {
-	<INT> functionParameters()
+	<EXP>	ParameterDeclaration(1)
 }
 
-void Rnd() :
+void FreeBytes() :
 {}
 {
-	<RND> functionParameters()
+	<FRE>	ParameterDeclaration(1)
+}
+
+void Left() :
+{}
+{
+	<LEFT$> ParameterDeclaration(2)
+}
+
+void Length() :
+{}
+{
+	<LEN> ParameterDeclaration(1)
+}
+
+void Logarithm() :
+{}
+{
+	<LOG>	ParameterDeclaration(1)
+}
+
+
+void Maxint() :
+{}
+{
+	<INT> ParameterDeclaration(1)
+}
+
+void Substring() :
+{}
+{
+	<MID$>	ParameterDeclaration(0)
+}
+
+void Position() :
+{}
+{
+	<POS>	ParameterDeclaration(1)
+}
+
+
+void Random() :
+{}
+{
+	<RND> ParameterDeclaration(1)
+}
+
+void Right() :
+{}
+{
+	<RIGHT$> ParameterDeclaration(2)
+}
+
+void Signum() :
+{}
+{
+	<SGN> ParameterDeclaration(1)
+}
+
+void Sine() :
+{}
+{
+	<SIN>	ParameterDeclaration(1)
+}
+
+void Space() :
+{}
+{
+	<SPC>	ParameterDeclaration(1)
+}
+
+void Squareroot() :
+{}
+{
+	<SQR>	ParameterDeclaration(1)
+}
+
+void StringToInt() :
+{}
+{
+	<STR>	ParameterDeclaration(1)
+}
+
+void StickX() :
+{}
+{
+	<STICKX>	ParameterDeclaration(1)
+}
+
+void StickY() :
+{}
+{
+	<STICKY>	ParameterDeclaration(1)
+}
+
+void Tab() :
+{}
+{
+	<TAB>	ParameterDeclaration(1)
+}
+
+void Tangens() :
+{}
+{
+	<TAN>	ParameterDeclaration(1)
+}
+
+
+/** DUNNO IF NEEDED */
+void UserProgram() :
+{}
+{
+	<USR>
+}
+
+void IntToString() :
+{}
+{
+	<VAL>	ParameterDeclaration(1)
+}
+
+void KeyCharacter() :
+{}
+{
+	<KEY> ParameterDeclaration(1)
 }
 
 void brightStatement():
