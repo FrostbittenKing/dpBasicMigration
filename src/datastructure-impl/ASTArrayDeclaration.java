@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public
-class ASTArray extends SimpleNode {
+class ASTArrayDeclaration extends SimpleNode {
 
     private ArrayList<String> array = new ArrayList<String>();
     
-  public ASTArray(int id) {
+  public ASTArrayDeclaration(int id) {
     super(id);
   }
 
-  public ASTArray(BasicParser p, int id) {
+  public ASTArrayDeclaration(BasicParser p, int id) {
     super(p, id);
   }
 

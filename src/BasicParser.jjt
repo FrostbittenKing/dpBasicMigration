@@ -308,7 +308,15 @@ void SimpleVariable() :
 	Name()
 }
 
-void Array() :
+void Array()  :
+{
+	Token t;
+}
+{
+	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>	
+}
+
+void ArrayDeclaration() :
 {
 	Token t;
 }
@@ -367,6 +375,7 @@ void Statement() #void:
 |	readStatement()
 |	dataStatement()
 |	restoreStatement()
+|	returnStatement()
 |	runStatement()
 |	screenStatement()
 |	scrollStatement()
@@ -692,7 +701,7 @@ void delimStatement():
 void dimStatement():
 {}
 {
-	<DIM> Array()
+	<DIM> ArrayDeclaration()
 }
 
 
@@ -776,7 +785,7 @@ void inputStatement():
 void letStatement():
 {}
 {
-	(<LET>)? Name() <ASSIGN> Expression()
+	(<LET>)? Variable() <ASSIGN> Expression()
 }
 
 void lineStatement():
