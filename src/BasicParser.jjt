@@ -1,6 +1,9 @@
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
+	VISITOR = true;
+	NODE_DEFAULT_VOID = true;
+	NODE_EXTENDS = "BaseNode";
 /*	DEBUG_PARSER = true;*/
 /*	DEBUG_LOOKAHEAD = true;
 	DEBUG_TOKEN_MANAGER = true;*/
@@ -16,6 +19,8 @@ public class BasicParser {
     BasicParser parser = new BasicParser(System.in);
     try {
     ASTparseRoot r =  parser.parseRoot();
+    BasicVisitor v = new BasicVisitor();
+    r.jjtAccept(v,null);
     r.dump(">");
   }
   catch (Exception e) {
@@ -197,7 +202,7 @@ TOKEN :
 }
 
 /** Root production. */
-ASTparseRoot parseRoot():
+ASTparseRoot parseRoot() #parseRoot:
 {}
 {
 	(parseCommand() "\n" )* <EOF>
@@ -316,22 +321,22 @@ void Array()  :
 	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>	
 }
 
-void ArrayDeclaration() :
+void ArrayDeclaration() #ArrayDeclaration:
 {
 	Token t;
 }
 {
-	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);})* <RPAREN>
+	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);})* <RPAREN>
 }
 
-void Name() #void : 
+void Name()  : 
 {
 	Token t;
 }
 {
-	t=<IDENTIFIER> {} #StringIdentifier
+	t=<IDENTIFIER> {jjtThis.data.push(t.image);} #StringIdentifier
 	|
-	t=<NUMERIC_IDENTIFIER> {} #NumberIdentifier
+	t=<NUMERIC_IDENTIFIER> {jjtThis.data.push(t.image);} #NumberIdentifier
 }
 
 void Literal() :
@@ -698,7 +703,7 @@ void delimStatement():
 	<DELIM>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
 }
 
-void dimStatement():
+void dimStatement() #DimStatement:
 {}
 {
 	<DIM> ArrayDeclaration()
