@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BasicMigration" default="compile" basedir=".">
+  <target name="init" description="Initialize variables and path">
+    <property name="src.dir" value="src"/>
+    <property name="java-gen.dir" value="java-gen"/>
+    <property name="build.dir" value="build"/>
+    <property name="datastructure-impl.dir" value="${src.dir}/datastructure-impl"/>
+    <property name="mainclass" value="BasicParser"/>
+    
+    <path id="project.classpath">
+      <pathelement location="${build.dir}"/>
+    </path>
+  </target>
+
+  <target name="run" depends="compile">
+    <java fork="true" classpathref="project.classpath" classname="${mainclass}"/>
+  </target>
+
+  <target name="compile" depends="BasicParserJJ">   
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${java-gen.dir}"
+	   destdir="${build.dir}"
+	   classpathref="project.classpath" />
+  </target>
+
+  <target name="BasicParserJJ" depends="BasicParserJJT">
+    <exec executable="javacc">
+      <arg line="${java-gen.dir}/BasicParser.jj"/>
+    </exec>
+  </target>
+
+  <target name="BasicParserJJT" depends="init">
+    <copy todir="${java-gen.dir}">
+      <fileset dir="${datastructure-impl.dir}">
+	<include name="**/*.java"/>
+      </fileset>
+    </copy>
+    <exec executable="jjtree">
+      <arg line="${src.dir}/BasicParser.jjt"/>
+    </exec>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete includeemptydirs="true">
+      <fileset dir="${build.dir}"/>
+      <fileset dir="${java-gen.dir}"/>
+    </delete>
+  </target>
+  
+</project>
