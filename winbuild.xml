@@ -24,7 +24,7 @@
   </target>
 
   <target name="BasicParserJJ" depends="BasicParserJJT">
-    <exec executable="javacc">
+    <exec executable="./bin-javacc-win/javacc.bat">
       <arg line="${java-gen.dir}/BasicParser.jj"/>
     </exec>
   </target>
@@ -35,7 +35,7 @@
 	<include name="**/*.java"/>
       </fileset>
     </copy>
-    <exec executable="jjtree">
+    <exec executable="./bin-javacc-win/jjtree.bat">
       <arg line="${src.dir}/BasicParser.jjt"/>
     </exec>
   </target>
