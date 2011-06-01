@@ -11,19 +11,21 @@ PARSER_BEGIN(BasicParser)
 /** Simple brace matcher. */
 public class BasicParser {
 
-  /** Main entry point. */
-  public static void main(String args[]) throws ParseException {
-    BasicParser parser = new BasicParser(System.in);
-    try {
-    ASTparseRoot r =  parser.parseRoot();
-    r.dump(">");
-  }
-  catch (Exception e) {
-  	System.out.println("Oops.");
-      	System.out.println(e.getMessage());
-      	e.printStackTrace();
+	/**
+	 * Main entry point.
+	 */
+	public static void main(String args[]) throws ParseException {
+		BasicParser parser = new BasicParser(System.in);
+		try {
+			ASTparseRoot r = parser.parseRoot();
+			r.dump(">");
+		}
+		catch(Exception e) {
+			System.out.println("Oops.");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
-     }
 }
 
 PARSER_END(BasicParser)
@@ -109,11 +111,11 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 |	<SCREEN: "screen" | "SCREEN">
 |	<SCROLL: "scroll" | "SCROLL">
 |	<SOUND: "sound" | "SOUND">
-| 	<STEP: "step" | "STEP"> 
+| 	<STEP: "step" | "STEP">
 |	<STOP: "stop" | "STOP">
 |	<STORE: "store" | "STORE">
 | 	<THEN: "then" | "THEN">
-| 	<TO: "to" | "TO"> 	
+| 	<TO: "to" | "TO">
 |	<TX: "tx" | "TX">
 }
 
@@ -252,7 +254,7 @@ void RelationalExpression() #void:
 void AdditiveExpression() #void :
 {}
 {
-	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)	
+	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)
 }
 
 void MultiplicativeExpression() #void :
@@ -286,7 +288,7 @@ void PrimaryPrefix() #void:
 {}
 {
 	Literal()
-|	
+|
 	"(" Expression() ")"
 |
 	Variable()
@@ -299,7 +301,7 @@ void Variable() :
 	Array()
 	|
 	SimpleVariable()
-	
+
 }
 
 void SimpleVariable() :
@@ -313,7 +315,7 @@ void Array()  :
 	Token t;
 }
 {
-	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>	
+	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>
 }
 
 void ArrayDeclaration() :
@@ -324,7 +326,7 @@ void ArrayDeclaration() :
 	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);})* <RPAREN>
 }
 
-void Name() #void : 
+void Name() #void :
 {
 	Token t;
 }
@@ -340,7 +342,7 @@ void Literal() :
 	<INTEGER_LITERAL>
 |
 	<FLOATING_POINT_LITERAL>
-|	
+|
 	<STRING_LITERAL>
 }
 
@@ -359,7 +361,7 @@ void Statement() #void:
 |	endStatement()
 |	forLoopStatement()
 |	gosubStatement()
-|	gotoStatement()	
+|	gotoStatement()
 |	grStatement()
 |	ifStatement()
 |	initStatement()
@@ -417,7 +419,7 @@ void ParameterDeclaration(int count) {
 	    if (tok.kind != COMMA)
 	       throw new ParseException("Encountered, " + tok.image + ", but was expecting " + "\",\"");
 	    getNextToken();
-	    Parameter();	
+	    Parameter();
       	}
      }
      tok = getToken(1);
@@ -436,12 +438,12 @@ void VariableLengthParameter() :
 void Parameter() :
 {}
 {
-	LOOKAHEAD(2) Expression() | SimpleVariable() 
+	LOOKAHEAD(2) Expression() | SimpleVariable()
 }
 
 void BasicFunctions() :
 {}
-{	
+{
 	Absolute()
 |	Action()
 |	Atan()
@@ -482,7 +484,7 @@ void Action() :
 {}
 {
 	<ACTION> ParameterDeclaration(1)
-}	
+}
 
 void Ascii() :
 {}
@@ -728,7 +730,7 @@ void returnStatement():
 {}
 {
 	<RETURN>
-}	
+}
 
 void grStatement() :
 {}
@@ -749,11 +751,11 @@ void gotoStatement() :
 void ifStatement():
 {}
 {
-	<IF> Expression()  
-	
+	<IF> Expression()
+
 	(
-		<THEN> 	( Statement() | lineNumber()) 
-		       | 
+		<THEN> 	( Statement() | lineNumber())
+		       |
 		gotoStatement()
 	)
 }
@@ -797,7 +799,7 @@ void lineStatement():
 void listStatement():
 {}
 {
-	<LIST>	( 
+	<LIST>	(
 	LOOKAHEAD (2, lineNumber()) lineNumber())?
 }
 
@@ -810,7 +812,7 @@ void newStatement():
 void onStatement():
 {}
 {
-	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())* 
+	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())*
 }
 
 void	pageStatement():
@@ -823,7 +825,7 @@ void	pageStatement():
 void	readStatement():
 {}
 {
-	<READ> Variable() ( "," Variable())*	
+	<READ> Variable() ( "," Variable())*
 }
 void	dataStatement():
 {}
@@ -883,7 +885,7 @@ void lineNumber() :
 
 
 
-/* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */ 
+/* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */
 void forLoopStatement() :
 {}
 {
