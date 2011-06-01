@@ -324,14 +324,14 @@ void ArrayDeclaration() :
 	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);})* <RPAREN>
 }
 
-void Name() :
+void Name() #void : 
 {
 	Token t;
 }
 {
-	t=<IDENTIFIER>
+	t=<IDENTIFIER> {} #StringIdentifier
 	|
-	t=<NUMERIC_IDENTIFIER>
+	t=<NUMERIC_IDENTIFIER> {} #NumberIdentifier
 }
 
 void Literal() :
