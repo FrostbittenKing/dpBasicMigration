@@ -89,4 +89,12 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
+	public Object visit(ASTExpression node, Object data) {
+		return null;
+	}
+
+	public Object visit(ASTIf node, Object data) {
+		return null;
+	}
+
 }
