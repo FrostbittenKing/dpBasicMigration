@@ -1,3 +1,3 @@
 @echo off
-ant -buildfile ./winbuild.xml run
+ant -buildfile ./winbuild.xml
 Pause

@@ -1,6 +1,9 @@
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
+	VISITOR = true;
+	NODE_DEFAULT_VOID = true;
+	NODE_EXTENDS = "BaseNode";
 /*	DEBUG_PARSER = true;*/
 /*	DEBUG_LOOKAHEAD = true;
 	DEBUG_TOKEN_MANAGER = true;*/
@@ -11,19 +14,23 @@ PARSER_BEGIN(BasicParser)
 /** Simple brace matcher. */
 public class BasicParser {
 
-  /** Main entry point. */
-  public static void main(String args[]) throws ParseException {
-    BasicParser parser = new BasicParser(System.in);
-    try {
-    ASTparseRoot r =  parser.parseRoot();
-    r.dump(">");
-  }
-  catch (Exception e) {
-  	System.out.println("Oops.");
-      	System.out.println(e.getMessage());
-      	e.printStackTrace();
+	/**
+	 * Main entry point.
+	 */
+	public static void main(String args[]) throws ParseException {
+		BasicParser parser = new BasicParser(System.in);
+		try {
+			ASTparseRoot r = parser.parseRoot();
+			BasicVisitor v = new BasicVisitor();
+			r.jjtAccept(v, null);
+			r.dump(">");
+		}
+		catch(Exception e) {
+			System.out.println("Oops.");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
-     }
 }
 
 PARSER_END(BasicParser)
@@ -197,28 +204,32 @@ TOKEN :
 }
 
 /** Root production. */
-ASTparseRoot parseRoot():
+ASTparseRoot parseRoot() #parseRoot:
 {}
 {
 	(parseCommand() "\n" )* <EOF>
 	{return jjtThis;}
 }
 
-void lineNumber():
-{}
+void lineNumber() #LineNumber:
 {
-	<INTEGER_LITERAL>
+	Token t;
+}
+{
+	t = <INTEGER_LITERAL> {jjtThis.lineNumber = Integer.parseInt(t.image);}
 }
 
-void parseCommand():
-{}
+void parseCommand() #Instruction:
+{
+	Token t;
+}
 {
 	lineNumber() Statement() (":" Statement())*
 /*(ifStatement() | gotoStatement() | forLoopStatement() | printStatement())*/
 }
 
 
-void Expression() :
+void Expression() #Expression:
 {}
 {
 	(LogicalOrExpression())
@@ -316,22 +327,22 @@ void Array()  :
 	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>
 }
 
-void ArrayDeclaration() :
+void ArrayDeclaration() #ArrayDeclaration:
 {
 	Token t;
 }
 {
-	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.addToken(t.image);})* <RPAREN>
+	Name() <LPAREN> t=<INTEGER_LITERAL> {} ("," t=<INTEGER_LITERAL> {})* <RPAREN>
 }
 
-void Name() #void :
+void Name()  :
 {
 	Token t;
 }
 {
-	t=<IDENTIFIER> {} #StringIdentifier
+	t=<IDENTIFIER> {jjtThis.data.push(t.image);} #StringIdentifier
 	|
-	t=<NUMERIC_IDENTIFIER> {} #NumberIdentifier
+	t=<NUMERIC_IDENTIFIER> {jjtThis.data.push(t.image);} #NumberIdentifier
 }
 
 void Literal() :
@@ -698,7 +709,7 @@ void delimStatement():
 	<DELIM>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
 }
 
-void dimStatement():
+void dimStatement() #DimStatement:
 {}
 {
 	<DIM> ArrayDeclaration()
@@ -746,14 +757,13 @@ void gotoStatement() :
 }
 
 /* TODO: missing boolean expression literal */
-void ifStatement():
+void ifStatement() #If:
 {}
 {
 	<IF> Expression()
 
 	(
-		<THEN> 	( Statement() | lineNumber())
-		       |
+		(<THEN> (Statement() | lineNumber()))  |
 		gotoStatement()
 	)
 }
