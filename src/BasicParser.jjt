@@ -2,7 +2,7 @@ options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen";
 	VISITOR = true;
-	NODE_DEFAULT_VOID = true;
+	NODE_DEFAULT_VOID = false;
 	NODE_EXTENDS = "BaseNode";
 /*	DEBUG_PARSER = true;*/
 /*	DEBUG_LOOKAHEAD = true;
@@ -114,12 +114,13 @@ TOKEN : /* BASIC LANGUAGE RESERVED WORDS */
 |	<SCREEN: "screen" | "SCREEN">
 |	<SCROLL: "scroll" | "SCROLL">
 |	<SOUND: "sound" | "SOUND">
-| 	<STEP: "step" | "STEP"> 
+| 	<STEP: "step" | "STEP">
 |	<STOP: "stop" | "STOP">
 |	<STORE: "store" | "STORE">
 | 	<THEN: "then" | "THEN">
-| 	<TO: "to" | "TO"> 	
+| 	<TO: "to" | "TO">
 |	<TX: "tx" | "TX">
+|   <DEF: "def" | "DEF">
 }
 
 
@@ -154,7 +155,6 @@ TOKEN: /* BASIC MATHEMATICAL FUNCTIONS */
 |	<USR:	 "usr"	  | "USR">
 |	<VAL:	 "val"	  | "VAL">
 |	<KEY:	 "key"	  | "KEY">
-|	<FN:	 "FN"<IDENTIFIER>>
 }
 
 
@@ -169,7 +169,8 @@ TOKEN: /* LITERALS */
 
 TOKEN: /*IDENTIFIER*/
 {
-	<NUMERIC_IDENTIFIER: <LETTER> (<PART_LETTER>)*>
+   <FUNCTION_NAME : "FN"<NUMERIC_IDENTIFIER>>
+|	<NUMERIC_IDENTIFIER: <LETTER> (<PART_LETTER>)*>
 |	<IDENTIFIER: <NUMERIC_IDENTIFIER>"$">
 |	<#LETTER: [ "A"-"Z","a"-"z"]>
 |	<#PART_LETTER: [ "A"-"Z","a"-"z", "0"-"9" ]>
@@ -209,10 +210,12 @@ ASTparseRoot parseRoot() #parseRoot:
 	{return jjtThis;}
 }
 
-void lineNumber():
-{}
+void lineNumber() #LineNumber:
 {
-	<INTEGER_LITERAL>
+		Token t;
+}
+{
+	t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);}
 }
 
 void parseCommand():
@@ -223,19 +226,19 @@ void parseCommand():
 }
 
 
-void Expression() :
+void Expression() #void :
 {}
 {
 	(LogicalOrExpression())
 }
 
-void LogicalOrExpression() #void:
+void LogicalOrExpression() #void :
 {}
 {
 	(LogicalAndExpression() ( <OR> LogicalAndExpression() )*) #LogicalOr(>1)
 }
 
-void LogicalAndExpression() #void:
+void LogicalAndExpression() #void :
 {}
 {
 	(ComparisonExpression() ( <AND> ComparisonExpression() )*) #LogicalAnd(>1)
@@ -248,16 +251,18 @@ void ComparisonExpression() #void :
 }
 
 void RelationalExpression() #void:
-{}
 {
-	(AdditiveExpression() ( ("<" | ">" | "<=" | ">=" | "<>") AdditiveExpression() )*) #RelationalExp(>1)
+		Token t;
+}
+{
+	(AdditiveExpression() ( (t="<" | t=">" | t="<=" | t=">=" | t="<>") {jjtThis.data.add(t.image);} AdditiveExpression() )*) #RelationalExp(>1)
 }
 
 
 void AdditiveExpression() #void :
 {}
 {
-	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)	
+	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)
 }
 
 void MultiplicativeExpression() #void :
@@ -281,17 +286,17 @@ void UnaryExpression() #void :
 }
 
 /** SUBJECT TO CHANGE */
-void PrimaryExpression() #void:
+void PrimaryExpression() #void :
 {}
 {
 	(PrimaryPrefix()) #PrimaryExp(>1)
 }
 
-void PrimaryPrefix() #void:
+void PrimaryPrefix() #void :
 {}
 {
 	Literal()
-|	
+|
 	"(" Expression() ")"
 |
 	Variable()
@@ -304,7 +309,7 @@ void Variable() :
 	Array()
 	|
 	SimpleVariable()
-	
+
 }
 
 void SimpleVariable() :
@@ -318,7 +323,7 @@ void Array()  :
 	Token t;
 }
 {
-	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>	
+	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>
 }
 
 void ArrayDeclaration() #ArrayDeclaration:
@@ -326,17 +331,17 @@ void ArrayDeclaration() #ArrayDeclaration:
 	Token t;
 }
 {
-	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);})* <RPAREN>
+	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);})* <RPAREN>
 }
 
-void Name()  : 
+void Name()  :
 {
 	Token t;
 }
 {
-	t=<IDENTIFIER> {jjtThis.data.push(t.image);} #StringIdentifier
+	t=<IDENTIFIER> {jjtThis.data.add(t.image);} #StringIdentifier
 	|
-	t=<NUMERIC_IDENTIFIER> {jjtThis.data.push(t.image);} #NumberIdentifier
+	t=<NUMERIC_IDENTIFIER> {jjtThis.data.add(t.image);} #NumberIdentifier
 }
 
 void Literal() :
@@ -345,11 +350,11 @@ void Literal() :
 	<INTEGER_LITERAL>
 |
 	<FLOATING_POINT_LITERAL>
-|	
+|
 	<STRING_LITERAL>
 }
 
-void Statement() #void:
+void Statement() #Statement:
 {}
 {
 	(brightStatement()
@@ -364,7 +369,7 @@ void Statement() #void:
 |	endStatement()
 |	forLoopStatement()
 |	gosubStatement()
-|	gotoStatement()	
+|	gotoStatement()
 |	grStatement()
 |	ifStatement()
 |	initStatement()
@@ -388,7 +393,7 @@ void Statement() #void:
 |	stopStatement()
 |	storeStatement()
 |	txStatement()
-	) #Statement
+	)
 }
 
 void NumericExpressionParameter() :
@@ -422,7 +427,7 @@ void ParameterDeclaration(int count) {
 	    if (tok.kind != COMMA)
 	       throw new ParseException("Encountered, " + tok.image + ", but was expecting " + "\",\"");
 	    getNextToken();
-	    Parameter();	
+	    Parameter();
       	}
      }
      tok = getToken(1);
@@ -441,12 +446,12 @@ void VariableLengthParameter() :
 void Parameter() :
 {}
 {
-	LOOKAHEAD(2) Expression() | SimpleVariable() 
+	LOOKAHEAD(2) Expression() | SimpleVariable()
 }
 
 void BasicFunctions() :
 {}
-{	
+{
 	Absolute()
 |	Action()
 |	Atan()
@@ -487,7 +492,7 @@ void Action() :
 {}
 {
 	<ACTION> ParameterDeclaration(1)
-}	
+}
 
 void Ascii() :
 {}
@@ -650,9 +655,11 @@ void KeyCharacter() :
 }
 
 void brightStatement():
-{}
 {
-	<BRIGHT> <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<BRIGHT> t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);}
 }
 
 void clearStatement():
@@ -680,15 +687,18 @@ void cursorYStatement():
 }
 
 void functionDefName():
-{}
 {
-	<FN>
+	Token t;
 }
+{
+	t=<FUNCTION_NAME> {jjtThis.data.add(t.image);}
+}
+
 
 void defStatement():
 {}
 {
-	functionDefName() (<LPAREN> Name() ("," Name())* <RPAREN>)? functionDefBody()
+	<DEF> functionDefName() (<LPAREN> Name() ("," Name())* <RPAREN>)? functionDefBody()
 }
 
 void functionDefBody():
@@ -733,7 +743,7 @@ void returnStatement():
 {}
 {
 	<RETURN>
-}	
+}
 
 void grStatement() :
 {}
@@ -751,14 +761,15 @@ void gotoStatement() :
 }
 
 /* TODO: missing boolean expression literal */
-void ifStatement():
-{}
+void ifStatement() #If:
 {
-	<IF> Expression()  
-	
+}
+{
+	<IF> Expression()
+
 	(
-		<THEN> 	( Statement() | lineNumber()) 
-		       | 
+		<THEN> 	( Statement() | lineNumber())
+		       |
 		gotoStatement()
 	)
 }
@@ -802,7 +813,7 @@ void lineStatement():
 void listStatement():
 {}
 {
-	<LIST>	( 
+	<LIST>	(
 	LOOKAHEAD (2, lineNumber()) lineNumber())?
 }
 
@@ -815,7 +826,7 @@ void newStatement():
 void onStatement():
 {}
 {
-	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())* 
+	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())*
 }
 
 void	pageStatement():
@@ -828,7 +839,7 @@ void	pageStatement():
 void	readStatement():
 {}
 {
-	<READ> Variable() ( "," Variable())*	
+	<READ> Variable() ( "," Variable())*
 }
 void	dataStatement():
 {}
@@ -888,7 +899,7 @@ void lineNumber() :
 
 
 
-/* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */ 
+/* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */
 void forLoopStatement() :
 {}
 {

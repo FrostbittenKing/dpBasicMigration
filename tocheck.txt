@@ -1,0 +1,13 @@
+let x = 1
+print x
+x = 1.5
+print x
+
+---> java
+
+int x = 1
+sout(x) // 1
+x = 1.5 // warning/error?
+sout(x) // 1
+
+--- check what basic does
