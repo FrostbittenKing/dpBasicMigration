@@ -266,9 +266,11 @@ void AdditiveExpression() #void :
 }
 
 void MultiplicativeExpression() #void :
-{}
 {
-	(ExponentialExpression() ( ( "*" | "/") ExponentialExpression())*) #Mult(>1)
+	Token t;
+}
+{
+	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.data.add(t.image);} ExponentialExpression())*) #Mult(>1)
 }
 
 void ExponentialExpression() #void :
@@ -888,16 +890,6 @@ void	txStatement():
 {
 	<TX> <INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
 }
-
-/*
-void lineNumber() :
-{}
-{
-	<INTEGER_LITERAL>
-}*/
-
-
-
 
 /* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */
 void forLoopStatement() :
