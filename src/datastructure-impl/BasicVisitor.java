@@ -334,7 +334,6 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	public Object visit(ASTbrightStatement node, Object data) {
 		node.childrenAccept(this, data);
-		node.brightness = Integer.parseInt(node.data.getFirst());
 		return null;
 	}
 
@@ -350,18 +349,16 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	public Object visit(ASTcursorXStatement node, Object data) {
 		node.childrenAccept(this, data);
-		node.x = Integer.parseInt(node.data.getFirst());
 		return null;
 	}
 
 	public Object visit(ASTcursorYStatement node, Object data) {
 		node.childrenAccept(this, data);
-		node.y = Integer.parseInt(node.data.getFirst());
 		return null;
 	}
 
 	public Object visit(ASTfunctionDefName node, Object data) {
-		node.name = node.data.getFirst();
+		node.childrenAccept(this, data);
 		return null;
 	}
 

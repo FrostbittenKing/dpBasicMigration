@@ -322,7 +322,6 @@ void SimpleVariable() :
 
 void Array()  :
 {
-	Token t;
 }
 {
 	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>
@@ -333,7 +332,7 @@ void ArrayDeclaration() #ArrayDeclaration:
 	Token t;
 }
 {
-	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);})* <RPAREN>
+	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.length = Integer.parseInt(t.image);} <RPAREN>
 }
 
 void Name()  :
@@ -347,13 +346,15 @@ void Name()  :
 }
 
 void Literal() :
-{}
 {
-	<INTEGER_LITERAL>
+	Token t;
+}
+{
+	t=<INTEGER_LITERAL> {jjtThis.integerValue = Integer.parseInt(t.image);}
 |
-	<FLOATING_POINT_LITERAL>
+	t=<FLOATING_POINT_LITERAL> {jjtThis.doubleValue = Double.parseDouble(t.image);}
 |
-	<STRING_LITERAL>
+	t=<STRING_LITERAL> {jjtThis.stringValue = t.image;}
 }
 
 void Statement() #Statement:
@@ -661,13 +662,17 @@ void brightStatement():
 	Token t;
 }
 {
-	<BRIGHT> t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);}
+	<BRIGHT> t=<INTEGER_LITERAL> {jjtThis.brightness = Integer.parseInt(t.image);}
 }
 
 void clearStatement():
-{}
 {
-	<CLEAR> <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<CLEAR>
+	t=<INTEGER_LITERAL> {jjtThis.start = Integer.parseInt(t.image);} ","
+	t=<INTEGER_LITERAL> {jjtThis.end = Integer.parseInt(t.image);}
 }
 
 void contStatement():
@@ -677,15 +682,19 @@ void contStatement():
 }
 
 void cursorXStatement():
-{}
 {
-	<CURSORX> <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<CURSORX> t=<INTEGER_LITERAL> {jjtThis.x = Integer.parseInt(t.image);}
 }
 
 void cursorYStatement():
-{}
 {
-	<CURSORY> lineNumber()
+	Token t;
+}
+{
+	<CURSORY> t=<INTEGER_LITERAL> {jjtThis.y = Integer.parseInt(t.image);}
 }
 
 void functionDefName():
@@ -693,7 +702,7 @@ void functionDefName():
 	Token t;
 }
 {
-	t=<FUNCTION_NAME> {jjtThis.data.add(t.image);}
+	t=<FUNCTION_NAME> {jjtThis.name = t.image;}
 }
 
 
@@ -710,15 +719,20 @@ void functionDefBody():
 }
 
 void delimStatement():
-{}
 {
-	<DELIM>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<DELIM>
+		t=<INTEGER_LITERAL> {jjtThis.foreground = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.background = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.type = Integer.parseInt(t.image);}
 }
 
 void dimStatement() #DimStatement:
 {}
 {
-	<DIM> ArrayDeclaration()
+	<DIM> ArrayDeclaration() ("," ArrayDeclaration())*
 }
 
 
@@ -748,9 +762,14 @@ void returnStatement():
 }
 
 void grStatement() :
-{}
 {
-	<GR>	<INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<GR>
+		t=<INTEGER_LITERAL> {jjtThis.foreground = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.background = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.type = Integer.parseInt(t.image);}
 }
 
 
@@ -789,9 +808,11 @@ void ifGotoStatement():
 }
 */
 void initStatement():
-{}
 {
-	<INIT>	<INTEGER_LITERAL>
+	Token t;
+}
+{
+	<INIT>	t=<INTEGER_LITERAL> {jjtThis.value = Integer.parseInt(t.image);}
 }
 
 void inputStatement():
@@ -807,9 +828,13 @@ void letStatement():
 }
 
 void lineStatement():
-{}
 {
-	<LINE> lineNumber() "," <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<LINE>
+	t=<INTEGER_LITERAL> {jjtThis.first = Integer.parseInt(t.image);} ","
+	t=<INTEGER_LITERAL> {jjtThis.last = Integer.parseInt(t.image);}
 }
 
 void listStatement():
@@ -831,71 +856,84 @@ void onStatement():
 	<ON> Expression() ( <GOTO> | <GOSUB>) lineNumber() ("," lineNumber())*
 }
 
-void	pageStatement():
+void pageStatement():
 {}
 {
 	<PAGE>
 }
 
 
-void	readStatement():
+void readStatement():
 {}
 {
 	<READ> Variable() ( "," Variable())*
 }
-void	dataStatement():
+void dataStatement():
 {}
 {
 	<DATA> (Literal() | Name()) ( "," (Literal() | Name()))*
 }
-void	restoreStatement():
+void restoreStatement():
 {}
 {
 	<RESTORE> (
 	LOOKAHEAD(2) lineNumber())?
 }
-void	runStatement():
+void runStatement():
 {}
 {
 	<RUN>	(LOOKAHEAD(2) lineNumber())?
 }
 
-void	screenStatement():
+void screenStatement():
 {}
 {
 	<SCREEN>
 }
-void	scrollStatement():
+void scrollStatement():
 {}
 {
 	<SCROLL>
 }
-void	soundStatement():
-{}
+void soundStatement():
 {
-	<SOUND> <INTEGER_LITERAL>
+	Token t;
 }
-void	stopStatement():
+{
+	<SOUND> t=<INTEGER_LITERAL> {jjtThis.tone = Integer.parseInt(t.image);}
+}
+void stopStatement():
 {}
 {
 	<STOP>
 }
-void	storeStatement():
+void storeStatement():
 {}
 {
 	<STORE>
 }
-void	txStatement():
-{}
+void txStatement():
 {
-	<TX> <INTEGER_LITERAL> "," <INTEGER_LITERAL> "," <INTEGER_LITERAL>
+	Token t;
+}
+{
+	<TX>
+		t=<INTEGER_LITERAL> {jjtThis.foreground = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.fontSize = Integer.parseInt(t.image);} ","
+		t=<INTEGER_LITERAL> {jjtThis.setBlinking(Integer.parseInt(t.image));}
 }
 
 /* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */
 void forLoopStatement() :
-{}
 {
-	<FOR> Variable() <ASSIGN> <INTEGER_LITERAL> <TO> <INTEGER_LITERAL> (<STEP> <INTEGER_LITERAL>)?
+	Token t;
+}
+{
+	<FOR> Variable() <ASSIGN>
+		t=<INTEGER_LITERAL> {jjtThis.start = Integer.parseInt(t.image);}
+	<TO>
+		t=<INTEGER_LITERAL> {jjtThis.end = Integer.parseInt(t.image);}
+	(<STEP> t=<INTEGER_LITERAL> {jjtThis.step = Integer.parseInt(t.image);})?
 }
 
 void nextStatement() :
