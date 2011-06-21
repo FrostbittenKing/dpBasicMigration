@@ -930,10 +930,10 @@ void forLoopStatement() :
 }
 {
 	<FOR> Variable() <ASSIGN>
-		t=<INTEGER_LITERAL> {jjtThis.start = Integer.parseInt(t.image);}
+		Expression()
 	<TO>
-		t=<INTEGER_LITERAL> {jjtThis.end = Integer.parseInt(t.image);}
-	(<STEP> t=<INTEGER_LITERAL> {jjtThis.step = Integer.parseInt(t.image);})?
+		Expression()
+	(<STEP> Expression())?
 }
 
 void nextStatement() :

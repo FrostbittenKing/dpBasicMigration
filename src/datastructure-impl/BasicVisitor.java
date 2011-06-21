@@ -28,17 +28,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-	public Object visit(ASTInstruction node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
 	public Object visit(ASTLogicalOr node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
-	public Object visit(ASTLogicalAndExpression node, Object data) {
 		node.childrenAccept(this, data);
 		return null;
 	}
@@ -48,17 +38,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-	public Object visit(ASTComparisonExpression node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
 	public Object visit(ASTComparisonExp node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
-	public Object visit(ASTRelationalExpression node, Object data) {
 		node.childrenAccept(this, data);
 		return null;
 	}
@@ -69,17 +49,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-	public Object visit(ASTAdditiveExpression node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
 	public Object visit(ASTAdd node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
-	public Object visit(ASTMultiplicativeExpression node, Object data) {
 		node.childrenAccept(this, data);
 		return null;
 	}
@@ -87,11 +57,6 @@ public class BasicVisitor implements BasicParserVisitor {
 	public Object visit(ASTMult node, Object data) {
 		node.childrenAccept(this, data);
 		node.type = ASTMult.Type.fromIdentity(node.data.getFirst());
-		return null;
-	}
-
-	public Object visit(ASTExponentialExpression node, Object data) {
-		node.childrenAccept(this, data);
 		return null;
 	}
 
@@ -105,17 +70,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-	public Object visit(ASTPrimaryExpression node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
 	public Object visit(ASTPrimaryExp node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
-	public Object visit(ASTPrimaryPrefix node, Object data) {
 		node.childrenAccept(this, data);
 		return null;
 	}
@@ -413,11 +368,6 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTExpression node, Object data) {
-		node.childrenAccept(this, data);
-		return null;
-	}
-
-	public Object visit(ASTLogicalOrExpression node, Object data) {
 		node.childrenAccept(this, data);
 		return null;
 	}
