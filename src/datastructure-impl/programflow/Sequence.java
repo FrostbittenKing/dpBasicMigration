@@ -3,7 +3,7 @@ package programflow;
 import java.lang.Object;
 import java.util.ArrayList;
 
-public abstract class Sequence extends Construct {
+public class Sequence extends Construct {
 	private ArrayList<Construct> constructs = new ArrayList<Construct>();
 
 	public String translate() {
@@ -14,7 +14,7 @@ public abstract class Sequence extends Construct {
 		return result;
 	}
 
-	public ArrayList<Construct> getConstructs {
+	public ArrayList<Construct> getConstructs() {
 		return constructs;
 	}
 }

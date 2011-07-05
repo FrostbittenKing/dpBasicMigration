@@ -1,6 +1,5 @@
 package programflow;
 
-import javax.sound.midi.Sequence;
 import java.lang.String;
 
 public class Loop extends Construct {
@@ -24,8 +23,8 @@ public class Loop extends Construct {
 		String result =
 				"for(" + variable + " = " + initialValue + "; " +
 				variable + " < " + upperBoundary + "; " +
-				variable + " += " step + ") {\r\n";
-		result += body.translate;
+				variable + " += " + step + ") {\r\n";
+		result += body.translate();
 		result += "}\r\n";
 		return result;
 	}

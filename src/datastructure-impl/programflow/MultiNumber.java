@@ -2,7 +2,7 @@ package programflow;
 
 public class MultiNumber {
 	private Integer ivalue;
-	private Integer dvalue;
+	private Double dvalue;
 
 	public MultiNumber(int value) {
 		this.ivalue = value;

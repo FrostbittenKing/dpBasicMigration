@@ -14,23 +14,23 @@ import programflow.Instruction;
 
 /** Simple brace matcher. */
 public class BasicParser {
-
-  /** Main entry point. */
-  public static void main(String args[]) throws ParseException {
-	  Instruction i = new Instruction();
-    BasicParser parser = new BasicParser(System.in);
-    try {
-    ASTparseRoot r =  parser.parseRoot();
-    BasicVisitor v = new BasicVisitor();
-    r.jjtAccept(v,null);
-    r.dump(">");
-  }
-  catch (Exception e) {
-  	System.out.println("Oops.");
-      	System.out.println(e.getMessage());
-      	e.printStackTrace();
+	/**
+	 * Main entry point.
+	 */
+	public static void main(String args[]) throws ParseException {
+		BasicParser parser = new BasicParser(System.in);
+		try {
+			ASTparseRoot r = parser.parseRoot();
+			BasicVisitor v = new BasicVisitor();
+			r.jjtAccept(v, null);
+			r.dump(">");
+		}
+		catch(Exception e) {
+			System.out.println("Oops.");
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
-     }
 }
 
 PARSER_END(BasicParser)
