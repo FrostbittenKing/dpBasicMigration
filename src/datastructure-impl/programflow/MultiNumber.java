@@ -1,8 +1,8 @@
 package programflow;
 
 public class MultiNumber {
-	int ivalue;
-	double dvalue;
+	private Integer ivalue;
+	private Integer dvalue;
 
 	public MultiNumber(int value) {
 		this.ivalue = value;

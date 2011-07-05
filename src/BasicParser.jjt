@@ -10,12 +10,14 @@ options {
 }
 
 PARSER_BEGIN(BasicParser)
+import programflow.Instruction;
 
 /** Simple brace matcher. */
 public class BasicParser {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
+	  Instruction i = new Instruction();
     BasicParser parser = new BasicParser(System.in);
     try {
     ASTparseRoot r =  parser.parseRoot();
@@ -226,31 +228,32 @@ void parseCommand():
 }
 
 
-void Expression() #void :
-{}
+void Expression()  :
+{
+}
 {
 	(LogicalOrExpression())
 }
 
-void LogicalOrExpression() #void :
+void LogicalOrExpression()  :
 {}
 {
 	(LogicalAndExpression() ( <OR> LogicalAndExpression() )*) #LogicalOr(>1)
 }
 
-void LogicalAndExpression() #void :
+void LogicalAndExpression()  :
 {}
 {
 	(ComparisonExpression() ( <AND> ComparisonExpression() )*) #LogicalAnd(>1)
 }
 
-void ComparisonExpression() #void :
+void ComparisonExpression()  :
 {}
 {
 	(RelationalExpression() ( ("=") RelationalExpression() )*) #ComparisonExp(>1)
 }
 
-void RelationalExpression() #void:
+void RelationalExpression() :
 {
 		Token t;
 }
@@ -259,13 +262,13 @@ void RelationalExpression() #void:
 }
 
 
-void AdditiveExpression() #void :
+void AdditiveExpression()  :
 {}
 {
 	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)
 }
 
-void MultiplicativeExpression() #void :
+void MultiplicativeExpression()  :
 {
 	Token t;
 }
@@ -273,13 +276,13 @@ void MultiplicativeExpression() #void :
 	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.data.add(t.image);} ExponentialExpression())*) #Mult(>1)
 }
 
-void ExponentialExpression() #void :
+void ExponentialExpression()  :
 {}
 {
 	(UnaryExpression() ( "^" UnaryExpression())*) #Exp(>1)
 }
 
-void UnaryExpression() #void :
+void UnaryExpression()  :
 {}
 {
 	(PrimaryExpression()
@@ -288,13 +291,13 @@ void UnaryExpression() #void :
 }
 
 /** SUBJECT TO CHANGE */
-void PrimaryExpression() #void :
+void PrimaryExpression()  :
 {}
 {
 	(PrimaryPrefix()) #PrimaryExp(>1)
 }
 
-void PrimaryPrefix() #void :
+void PrimaryPrefix()  :
 {}
 {
 	Literal()

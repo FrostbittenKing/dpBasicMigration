@@ -1,4 +1,4 @@
 package programflow;
 
-public class Instruction {
+public abstract class Instruction extends Constructor {
 }
