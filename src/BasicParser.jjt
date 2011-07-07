@@ -18,18 +18,21 @@ public class BasicParser {
 	 * Main entry point.
 	 */
 	public static void main(String args[]) throws ParseException {
-		BasicParser parser = new BasicParser(System.in);
 		try {
-			ASTparseRoot r = parser.parseRoot();
-			BasicVisitor v = new BasicVisitor();
-			r.jjtAccept(v, null);
-			r.dump(">");
+
 		}
 		catch(Exception e) {
 			System.out.println("Oops.");
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	public static SimpleNode pass1() throws ParserException {
+		BasicParser parser = new BasicParser(System.in);
+		ASTparseRoot r = parser.parseRoot();
+		r.dump(">");
+		return r;
 	}
 }
 
@@ -217,7 +220,7 @@ void lineNumber() #LineNumber:
 		Token t;
 }
 {
-	t=<INTEGER_LITERAL> {jjtThis.data.add(t.image);}
+	t=<INTEGER_LITERAL> {jjtThis.lineNumber = Integer.parseInt(t.image);}
 }
 
 void parseCommand():
@@ -258,7 +261,7 @@ void RelationalExpression() :
 		Token t;
 }
 {
-	(AdditiveExpression() ( (t="<" | t=">" | t="<=" | t=">=" | t="<>") {jjtThis.data.add(t.image);} AdditiveExpression() )*) #RelationalExp(>1)
+	(AdditiveExpression() ( (t="<" | t=">" | t="<=" | t=">=" | t="<>") {jjtThis.type = ASTRelationalExp.Type.fromIdentity(t.image);} AdditiveExpression() )*) #RelationalExp(>1)
 }
 
 
@@ -273,7 +276,7 @@ void MultiplicativeExpression()  :
 	Token t;
 }
 {
-	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.data.add(t.image);} ExponentialExpression())*) #Mult(>1)
+	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.type = ASTMult.Type.fromIdentity(t.image);} ExponentialExpression())*) #Mult(>1)
 }
 
 void ExponentialExpression()  :
