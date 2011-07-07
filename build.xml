@@ -5,7 +5,7 @@
     <property name="java-gen.dir" value="java-gen"/>
     <property name="build.dir" value="build"/>
     <property name="datastructure-impl.dir" value="${src.dir}/datastructure-impl"/>
-    <property name="mainclass" value="BasicParser"/>
+    <property name="mainclass" value="basicparser.BasicParser"/>
     
     <path id="project.classpath">
       <pathelement location="${build.dir}"/>

@@ -395,6 +395,10 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
+        
+    
+    /*
+
         public Object visit(ASTPrimaryPrefix node, Object data) {
 	        node.childrenAccept(this,data);
 		return null;
@@ -405,10 +409,11 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
+    
         public Object visit(ASTExponentialExpression node, Object data) {
 	        node.childrenAccept(this,data);
 		return null;
-	}
+		}
 
         public Object visit(ASTMultiplicativeExpression node, Object data) {
 	        node.childrenAccept(this,data);
@@ -438,7 +443,7 @@ public class BasicVisitor implements BasicParserVisitor {
         public Object visit(ASTLogicalOrExpression node, Object data) {
 	        node.childrenAccept(this,data);
 		return null;
-	}
+		}*/
 
     
 

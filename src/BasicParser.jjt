@@ -19,7 +19,7 @@ public class BasicParser {
 	 */
 	public static void main(String args[]) throws ParseException {
 		try {
-
+		    pass1();
 		}
 		catch(Exception e) {
 			System.out.println("Oops.");
@@ -238,25 +238,25 @@ void Expression()  :
 	(LogicalOrExpression())
 }
 
-void LogicalOrExpression()  :
+void LogicalOrExpression() #void :
 {}
 {
 	(LogicalAndExpression() ( <OR> LogicalAndExpression() )*) #LogicalOr(>1)
 }
 
-void LogicalAndExpression()  :
+void LogicalAndExpression() #void :
 {}
 {
 	(ComparisonExpression() ( <AND> ComparisonExpression() )*) #LogicalAnd(>1)
 }
 
-void ComparisonExpression()  :
+void ComparisonExpression() #void  :
 {}
 {
 	(RelationalExpression() ( ("=") RelationalExpression() )*) #ComparisonExp(>1)
 }
 
-void RelationalExpression() :
+void RelationalExpression() #void :
 {
 		Token t;
 }
@@ -265,13 +265,13 @@ void RelationalExpression() :
 }
 
 
-void AdditiveExpression()  :
+void AdditiveExpression() #void :
 {}
 {
 	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)
 }
 
-void MultiplicativeExpression()  :
+void MultiplicativeExpression() #void  :
 {
 	Token t;
 }
@@ -279,13 +279,13 @@ void MultiplicativeExpression()  :
 	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.type = ASTMult.Type.fromIdentity(t.image);} ExponentialExpression())*) #Mult(>1)
 }
 
-void ExponentialExpression()  :
+void ExponentialExpression() #void :
 {}
 {
 	(UnaryExpression() ( "^" UnaryExpression())*) #Exp(>1)
 }
 
-void UnaryExpression()  :
+void UnaryExpression()  #void :
 {}
 {
 	(PrimaryExpression()
@@ -294,13 +294,13 @@ void UnaryExpression()  :
 }
 
 /** SUBJECT TO CHANGE */
-void PrimaryExpression()  :
+void PrimaryExpression()  #void :
 {}
 {
 	(PrimaryPrefix()) #PrimaryExp(>1)
 }
 
-void PrimaryPrefix()  :
+void PrimaryPrefix()  #void :
 {}
 {
 	Literal()
@@ -354,12 +354,12 @@ ASTName Name()  :
 	{ return jjtThis; }
 }
 
-void Literal() :
+void Literal():
 {
 	Token t;
 }
 {
-	t=<INTEGER_LITERAL> {jjtThis.integerValue = Integer.parseInt(t.image);}
+	t=<INTEGER_LITERAL> {jjtThis.integerValue = Integer.parseInt(t.image);} 
 |
 	t=<FLOATING_POINT_LITERAL> {jjtThis.doubleValue = Double.parseDouble(t.image);}
 |
