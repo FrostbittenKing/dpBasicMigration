@@ -16,7 +16,9 @@ public class Exp extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.pow(Math.E, " + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.pow(Math.E, " + varName + ");\r\n";
+		}
 	}
 }

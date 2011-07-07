@@ -16,7 +16,9 @@ public class Cos extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.cos(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.cos(" + varName + ");\r\n";
+		}
 	}
 }

@@ -330,15 +330,17 @@ void Array()  :
 	Name() <LPAREN> Expression()  ("," Expression())* <RPAREN>
 }
 
-void ArrayDeclaration() #ArrayDeclaration:
+ASTArrayDeclaration ArrayDeclaration() #ArrayDeclaration:
 {
 	Token t;
+	ASTName name;
 }
 {
-	Name() <LPAREN> t=<INTEGER_LITERAL> {jjtThis.length = Integer.parseInt(t.image);} <RPAREN>
+	name = Name() {jjtThis.name = name.data.getLast();}<LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);})* <RPAREN>
+	{return jjtThis;}
 }
 
-void Name()  :
+ASTName Name()  :
 {
 	Token t;
 }
@@ -346,6 +348,7 @@ void Name()  :
 	t=<IDENTIFIER> {jjtThis.data.add(t.image);} #StringIdentifier
 	|
 	t=<NUMERIC_IDENTIFIER> {jjtThis.data.add(t.image);} #NumberIdentifier
+	{ return jjtThis; }
 }
 
 void Literal() :
@@ -733,9 +736,11 @@ void delimStatement():
 }
 
 void dimStatement() #DimStatement:
-{}
 {
-	<DIM> ArrayDeclaration() ("," ArrayDeclaration())*
+ASTArrayDeclaration arrayDec;
+}
+{
+	<DIM> arrayDec = ArrayDeclaration() {}("," arrayDec = ArrayDeclaration())*
 }
 
 

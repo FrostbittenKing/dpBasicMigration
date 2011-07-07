@@ -16,7 +16,9 @@ public class Log extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.log(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.log(" + varName + ");\r\n";
+		}
 	}
 }

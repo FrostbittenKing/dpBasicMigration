@@ -16,7 +16,9 @@ public class Tan extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.tan(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.tan(" + varName + ");\r\n";
+		}
 	}
 }

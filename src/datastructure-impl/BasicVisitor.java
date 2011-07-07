@@ -487,4 +487,51 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
+        public Object visit(ASTPrimaryPrefix node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTPrimaryExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTExponentialExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTMultiplicativeExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTAdditiveExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTRelationalExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTComparisonExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTLogicalAndExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+        public Object visit(ASTLogicalOrExpression node, Object data) {
+	        node.childrenAccept(this,data);
+		return null;
+	}
+
+    
+
 }

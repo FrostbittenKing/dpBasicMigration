@@ -16,7 +16,9 @@ public class Sqr extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.sqrt(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.sqrt(" + varName + ");\r\n";
+		}
 	}
 }

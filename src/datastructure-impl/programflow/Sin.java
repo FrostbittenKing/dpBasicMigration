@@ -16,7 +16,10 @@ public class Sin extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.sin(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.sin(" + varName + ");\r\n";
+	
+		}
 	}
 }

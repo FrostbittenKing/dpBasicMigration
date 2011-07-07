@@ -16,7 +16,9 @@ public class Int extends Instruction{
 	public String translate(){
 		if(value != null){
 			return "Math.ceil(" + value + ");\r\n";
-		else
+		}
+		else {
 			return "Math.ceil(" + varName + ");\r\n";
+		}
 	}
 }
