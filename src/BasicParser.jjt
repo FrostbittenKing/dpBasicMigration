@@ -336,7 +336,7 @@ ASTArrayDeclaration ArrayDeclaration() #ArrayDeclaration:
 	ASTName name;
 }
 {
-	name = Name() {jjtThis.name = name.data.getLast();}<LPAREN> t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.data.push(t.image);})* <RPAREN>
+	name = Name() { jjtThis.name = (SimpleNode) name.jjtGetChild(0);}<LPAREN> t=<INTEGER_LITERAL> {jjtThis.parameters.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.parameters.push(t.image);})* <RPAREN>
 	{return jjtThis;}
 }
 
@@ -345,9 +345,9 @@ ASTName Name()  :
 	Token t;
 }
 {
-	t=<IDENTIFIER> {jjtThis.data.add(t.image);} #StringIdentifier
+	t=<IDENTIFIER> {jjtThis.value = t.image;} #StringIdentifier
 	|
-	t=<NUMERIC_IDENTIFIER> {jjtThis.data.add(t.image);} #NumberIdentifier
+	t=<NUMERIC_IDENTIFIER> {jjtThis.value = t.image;} #NumberIdentifier
 	{ return jjtThis; }
 }
 
@@ -740,7 +740,7 @@ void dimStatement() #DimStatement:
 ASTArrayDeclaration arrayDec;
 }
 {
-	<DIM> arrayDec = ArrayDeclaration() {}("," arrayDec = ArrayDeclaration())*
+	<DIM> arrayDec = ArrayDeclaration() { jjtThis.arrayDeclarations.push(arrayDec); }("," arrayDec = ArrayDeclaration() {jjtThis.arrayDeclarations.push(arrayDec);} )*
 }
 
 

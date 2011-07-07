@@ -1,3 +1,4 @@
+
 import java.lang.Integer;
 import java.lang.NumberFormatException;
 import java.util.LinkedList;
@@ -334,6 +335,12 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	public Object visit(ASTDimStatement node, Object data) {
 		node.childrenAccept(this, data);
+		for (ASTArrayDeclaration currentArrayDeclaration : node.arrayDeclarations) {
+		    if (currentArrayDeclaration.name instanceof ASTNumberIdentifier) {
+			ASTNumberIdentifier numberIdentifier = (ASTNumberIdentifier)currentArrayDeclaration.name;
+			VariableTable.instance().getNumberArrays().put(numberIdentifier.value,currentArrayDeclaration.parameters);
+		    }
+		}
 		return null;
 	}
 
