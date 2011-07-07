@@ -1,6 +1,6 @@
 options {
 	MULTI = true;
-	OUTPUT_DIRECTORY="./java-gen";
+	OUTPUT_DIRECTORY="./java-gen/basicparser";
 	VISITOR = true;
 	NODE_DEFAULT_VOID = false;
 	NODE_EXTENDS = "BaseNode";
@@ -10,7 +10,7 @@ options {
 }
 
 PARSER_BEGIN(BasicParser)
-import programflow.Instruction;
+package basicparser;
 
 /** Simple brace matcher. */
 public class BasicParser {
@@ -28,7 +28,7 @@ public class BasicParser {
 		}
 	}
 
-	public static SimpleNode pass1() throws ParserException {
+	public static SimpleNode pass1() throws ParseException {
 		BasicParser parser = new BasicParser(System.in);
 		ASTparseRoot r = parser.parseRoot();
 		r.dump(">");

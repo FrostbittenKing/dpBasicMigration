@@ -29,7 +29,7 @@
 
   <target name="BasicParserJJ" depends="BasicParserJJT">
     <exec executable="javacc">
-      <arg line="${java-gen.dir}/BasicParser.jj"/>
+      <arg line="${java-gen.dir}/basicparser/BasicParser.jj"/>
     </exec>
   </target>
 
