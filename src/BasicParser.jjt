@@ -350,6 +350,7 @@ ASTName Name()  :
 }
 {
 	t=<IDENTIFIER> {jjtThis.value = t.image;} #StringIdentifier
+	{ return jjtThis; }
 	|
 	t=<NUMERIC_IDENTIFIER> {jjtThis.value = t.image;} #NumberIdentifier
 	{ return jjtThis; }
@@ -360,7 +361,7 @@ void Literal() #Literal (!(jjtree.peekNode() instanceof ASTStringLiteral)):
 	Token t;
 }
 {
-	t=<INTEGER_LITERAL> {jjtThis.integerValue = Integer.parseInt(t.image);} 
+	t=<INTEGER_LITERAL> {jjtThis.integerValue = Integer.parseInt(t.image);}
 |
 	t=<FLOATING_POINT_LITERAL> {jjtThis.doubleValue = Double.parseDouble(t.image);}
 |

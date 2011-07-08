@@ -3,11 +3,9 @@
   <target name="init" description="Initialize variables and path">
     <property name="src.dir" value="src"/>
     <property name="java-gen.dir" value="java-gen"/>
-    <property name="java-gen-programflow.dir" value="java-gen/programflow"/>
     <property name="build.dir" value="build"/>
     <property name="datastructure-impl.dir" value="${src.dir}/datastructure-impl"/>
-    <property name="datastructure-impl-programflow.dir" value="${src.dir}/datastructure-impl/programflow"/>
-    <property name="mainclass" value="BasicParser"/>
+    <property name="mainclass" value="basicparser.BasicParser"/>
     
     <path id="project.classpath">
       <pathelement location="${build.dir}"/>
@@ -27,7 +25,7 @@
 
   <target name="BasicParserJJ" depends="BasicParserJJT">
     <exec executable="./bin-javacc-win/javacc.bat">
-      <arg line="${java-gen.dir}/BasicParser.jj"/>
+      <arg line="${java-gen.dir}/basicparser/BasicParser.jj"/>
     </exec>
   </target>
 
