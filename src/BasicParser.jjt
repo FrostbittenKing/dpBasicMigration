@@ -166,7 +166,7 @@ TOKEN: /* BASIC MATHEMATICAL FUNCTIONS */
 TOKEN: /* LITERALS */
 {
 	<INTEGER_LITERAL: ["0"-"9"] ( ["0"-"9"] )*>
-|	<FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])+>
+|	<FLOATING_POINT_LITERAL: (["0"-"9"])* "." (["0"-"9"])+>
 |	<STRING_LITERAL: "\"" (~["\n","\r", "\""])* "\"">
 /*|	<EXPRESSION: [ */
 /*| <VAR: "*"+> */
@@ -697,7 +697,7 @@ void cursorXStatement():
 	Token t;
 }
 {
-	<CURSORX> t=<INTEGER_LITERAL> {jjtThis.x = Integer.parseInt(t.image);}
+	<CURSORX> Expression()/* {jjtThis.x = Integer.parseInt(t.image);}*/
 }
 
 void cursorYStatement():
@@ -705,7 +705,7 @@ void cursorYStatement():
 	Token t;
 }
 {
-	<CURSORY> t=<INTEGER_LITERAL> {jjtThis.y = Integer.parseInt(t.image);}
+	<CURSORY> Expression() /*t=<INTEGER_LITERAL> {jjtThis.y = Integer.parseInt(t.image);}*/
 }
 
 void functionDefName():
@@ -825,7 +825,7 @@ void initStatement():
 	Token t;
 }
 {
-	<INIT>	t=<INTEGER_LITERAL> {jjtThis.value = Integer.parseInt(t.image);}
+	<INIT>	Expression() //{jjtThis.value = Integer.parseInt(t.image);}
 }
 
 void inputStatement():
@@ -846,8 +846,8 @@ void lineStatement():
 }
 {
 	<LINE>
-	t=<INTEGER_LITERAL> {jjtThis.first = Integer.parseInt(t.image);} ","
-	t=<INTEGER_LITERAL> {jjtThis.last = Integer.parseInt(t.image);}
+	/*t=<INTEGER_LITERAL> {jjtThis.first = Integer.parseInt(t.image);}*/ Expression() ","
+	/*t=<INTEGER_LITERAL> {jjtThis.last = Integer.parseInt(t.image);}*/ Expression()
 }
 
 void listStatement():
@@ -884,7 +884,7 @@ void readStatement():
 void dataStatement():
 {}
 {
-	<DATA> (Literal() | Name()) ( "," (Literal() | Name()))*
+	<DATA> /*(Literal() | Name()) ( "," (Literal() | Name()))**/ Expression() ("," Expression())*
 }
 void restoreStatement():
 {}
@@ -913,7 +913,7 @@ void soundStatement():
 	Token t;
 }
 {
-	<SOUND> t=<INTEGER_LITERAL> {jjtThis.tone = Integer.parseInt(t.image);}
+	<SOUND> /*t=<INTEGER_LITERAL> {jjtThis.tone = Integer.parseInt(t.image);} */ Expression()
 }
 void stopStatement():
 {}
@@ -931,9 +931,9 @@ void txStatement():
 }
 {
 	<TX>
-		t=<INTEGER_LITERAL> {jjtThis.foreground = Integer.parseInt(t.image);} ","
-		t=<INTEGER_LITERAL> {jjtThis.fontSize = Integer.parseInt(t.image);} ","
-		t=<INTEGER_LITERAL> {jjtThis.setBlinking(Integer.parseInt(t.image));}
+	/*	t=<INTEGER_LITERAL> {jjtThis.foreground = Integer.parseInt(t.image);} */ Expression() ","
+	/*	t=<INTEGER_LITERAL> {jjtThis.fontSize = Integer.parseInt(t.image);}*/ Expression() ","
+	/*	t=<INTEGER_LITERAL> {jjtThis.setBlinking(Integer.parseInt(t.image));}*/ Expression()
 }
 
 /* TODO: missing variable literal, embedded commands because it expects at least one command for some reason */
