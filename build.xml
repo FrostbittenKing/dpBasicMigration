@@ -20,7 +20,7 @@
     <java fork="true" classpathref="project.classpath" classname="${mainclass}"/>
   </target>
 
-  <target name="compile" depends="BasicParserJJ">   
+  <target name="compile" depends="BasicParserJJ">
     <mkdir dir="${build.dir}"/>
     <javac srcdir="${java-gen.dir}"
 	   destdir="${build.dir}"

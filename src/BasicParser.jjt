@@ -4,8 +4,8 @@ options {
 	VISITOR = true;
 	NODE_DEFAULT_VOID = false;
 	NODE_EXTENDS = "BaseNode";
-/*	DEBUG_PARSER = true;*/
-/*	DEBUG_LOOKAHEAD = true;
+/*	DEBUG_PARSER = true;
+	DEBUG_LOOKAHEAD = true;
 	DEBUG_TOKEN_MANAGER = true;*/
 }
 
@@ -152,7 +152,7 @@ TOKEN: /* BASIC MATHEMATICAL FUNCTIONS */
 |	<SIN:	"sin"	| "SIN">
 |	<SPC:	"spc"	| "SPC">
 |	<SQR:	"sqr"	| "SQR">
-|	<STR:	"str"	| "STR">
+|	<STR:	"str$"	| "STR$">
 |	<STICKX: "stickx" | "STICKX">
 |	<STICKY: "sticky" | "STICKY">
 |	<TAB:	 "tab"	  | "TAB">
@@ -174,11 +174,11 @@ TOKEN: /* LITERALS */
 
 TOKEN: /*IDENTIFIER*/
 {
-   <FUNCTION_NAME : "FN"<NUMERIC_IDENTIFIER>>
+	<FUNCTION_NAME: "FN"<NUMERIC_IDENTIFIER>>
 |	<NUMERIC_IDENTIFIER: <LETTER> (<PART_LETTER>)*>
-|	<IDENTIFIER: <NUMERIC_IDENTIFIER>"$">
 |	<#LETTER: [ "A"-"Z","a"-"z"]>
 |	<#PART_LETTER: [ "A"-"Z","a"-"z", "0"-"9" ]>
+|	<IDENTIFIER: <NUMERIC_IDENTIFIER> <DOLLAR>>
 }
 
 /* SEPARATORS */
@@ -188,6 +188,7 @@ TOKEN :
 |	<RPAREN: ")">
 |	<SEMICOLON: ";">
 |	<COMMA: (",")>
+|	<DOLLAR: "$">
 
 }
 
@@ -231,7 +232,7 @@ void parseCommand():
 }
 
 
-void Expression()  :
+void Expression() #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral)) :
 {
 }
 {
@@ -293,7 +294,7 @@ void UnaryExpression()  #void :
 |	BasicFunctions()) #UnaryExpression(>1)
 }
 
-/** SUBJECT TO CHANGE */
+// ** SUBJECT TO CHANGE */
 void PrimaryExpression()  #void :
 {}
 {
@@ -354,7 +355,7 @@ ASTName Name()  :
 	{ return jjtThis; }
 }
 
-void Literal():
+void Literal() #Literal (!(jjtree.peekNode() instanceof ASTStringLiteral)):
 {
 	Token t;
 }
@@ -363,7 +364,7 @@ void Literal():
 |
 	t=<FLOATING_POINT_LITERAL> {jjtThis.doubleValue = Double.parseDouble(t.image);}
 |
-	t=<STRING_LITERAL> {jjtThis.stringValue = t.image;}
+	t=<STRING_LITERAL> {jjtThis.stringValue = t.image;} #StringLiteral
 }
 
 void Statement() #Statement:
