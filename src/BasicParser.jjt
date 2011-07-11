@@ -12,14 +12,30 @@ options {
 PARSER_BEGIN(BasicParser)
 package basicparser;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 /** Simple brace matcher. */
 public class BasicParser {
+	public static final int IN_SYS = 0;
+	public static final int IN_FIBO = 1;
+
 	/**
 	 * Main entry point.
 	 */
 	public static void main(String args[]) throws ParseException {
+		int intype = IN_SYS;
+		InputStream instream = null;
+		switch(intype) {
+			case IN_FIBO::
+				instream = new FileInputStream("./progs/fibo.bas");
+				break;
+			default:
+				instream = System.in;
+				break;
+		}
 		try {
-		    pass1();
+		    pass1(instream);
 		}
 		catch(Exception e) {
 			System.out.println("Oops.");
@@ -28,8 +44,9 @@ public class BasicParser {
 		}
 	}
 
-	public static SimpleNode pass1() throws ParseException {
-		BasicParser parser = new BasicParser(System.in);
+	public static SimpleNode pass1(InputStream instream) throws ParseException {
+		System.out.println("Input stream " + instream);
+		BasicParser parser = new BasicParser(instream);
 		ASTparseRoot r = parser.parseRoot();
 		r.dump(">");
 		return r;

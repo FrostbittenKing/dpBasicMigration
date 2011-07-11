@@ -15,6 +15,10 @@
   <target name="run" depends="compile">
     <java fork="true" classpathref="project.classpath" classname="${mainclass}"/>
   </target>
+  
+  <target name="quickrun" depends="init">
+    <java fork="true" classpathref="project.classpath" classname="${mainclass}"/>
+  </target>
 
   <target name="compile" depends="BasicParserJJ">   
     <mkdir dir="${build.dir}"/>
