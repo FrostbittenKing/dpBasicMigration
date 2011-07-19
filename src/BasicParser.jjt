@@ -1,3 +1,5 @@
+
+
 options {
 	MULTI = true;
 	OUTPUT_DIRECTORY="./java-gen/basicparser";
@@ -12,30 +14,27 @@ options {
 PARSER_BEGIN(BasicParser)
 package basicparser;
 
+import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import basicparser.programflow.ProgramGraph;
+import basicparser.SimpleNode;
+import basicparser.programflow.GraphBuilder;
 
 /** Simple brace matcher. */
 public class BasicParser {
-	public static final int IN_SYS = 0;
-	public static final int IN_FIBO = 1;
 
 	/**
 	 * Main entry point.
 	 */
-	public static void main(String args[]) throws ParseException {
-		int intype = IN_SYS;
-		InputStream instream = null;
-		switch(intype) {
-			case IN_FIBO::
-				instream = new FileInputStream("./progs/fibo.bas");
-				break;
-			default:
-				instream = System.in;
-				break;
-		}
+	public static void main(String args[]) throws ParseException, FileNotFoundException, IOException {
+		InputStream instream = args.length == 0 ? System.in : new FileInputStream(args[0]);
 		try {
-		    pass1(instream);
+		    SimpleNode root = pass1(instream);
+			ProgramGraph graph = pass2(root);
+			pass3(graph, System.out);
 		}
 		catch(Exception e) {
 			System.out.println("Oops.");
@@ -45,11 +44,20 @@ public class BasicParser {
 	}
 
 	public static SimpleNode pass1(InputStream instream) throws ParseException {
-		System.out.println("Input stream " + instream);
 		BasicParser parser = new BasicParser(instream);
 		ASTparseRoot r = parser.parseRoot();
 		r.dump(">");
 		return r;
+	}
+
+	public static ProgramGraph pass2(SimpleNode root) throws ParseException {
+		GraphBuilder builder = new GraphBuilder();
+		return builder.build(root);
+	}
+
+	public static void pass3(ProgramGraph graph, OutputStream out) throws IOException {
+		System.out.println("<<<JAVA>>>");
+		graph.translate(out);
 	}
 }
 

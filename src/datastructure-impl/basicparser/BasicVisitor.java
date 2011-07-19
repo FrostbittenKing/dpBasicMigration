@@ -2,8 +2,22 @@ package basicparser;
 
 import java.lang.Integer;
 import java.lang.NumberFormatException;
+import java.lang.RuntimeException;
 import java.util.LinkedList;
+
+import basicparser.*;
+import basicparser.ASTArray;
+import basicparser.ASTExpression;
+import basicparser.ASTName;
+import basicparser.ASTNumberIdentifier;
+import basicparser.ASTSimpleVariable;
+import basicparser.ASTStringIdentifier;
+import basicparser.Node;
+import basicparser.SimpleNode;
 import basicparser.programflow.*;
+import basicparser.programflow.UnknownChildException;
+import basicparser.programflow.VariableTable;
+import basicparser.programflow.ExpressionTranslator;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
@@ -265,12 +279,15 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTDimStatement node, Object data) {
-		node.childrenAccept(this, data);
-		for (ASTArrayDeclaration currentArrayDeclaration : node.arrayDeclarations) {
-		    if (currentArrayDeclaration.name instanceof ASTNumberIdentifier) {
-			ASTNumberIdentifier numberIdentifier = (ASTNumberIdentifier)currentArrayDeclaration.name;
-			VariableTable.instance().getNumberArrays().put(numberIdentifier.value,currentArrayDeclaration.parameters);
-		    }
+		for(ASTArrayDeclaration currentArrayDeclaration : node.arrayDeclarations) {
+			if(currentArrayDeclaration.name instanceof ASTNumberIdentifier) {
+				ASTNumberIdentifier numberIdentifier = (ASTNumberIdentifier) currentArrayDeclaration.name;
+				LinkedList<Integer> dimensions = new LinkedList<Integer>();
+				VariableTable.instance().getNumberArrays().put(numberIdentifier.value, dimensions);
+				for(String parameter : currentArrayDeclaration.parameters) {
+					dimensions.add(Integer.parseInt(parameter));
+				}
+			}
 		}
 		return null;
 	}
@@ -316,7 +333,47 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTletStatement node, Object data) {
+		Node variable = node.children[0].jjtGetChild(0);
+		Assignment assignment = new Assignment();
+		if(variable instanceof ASTSimpleVariable) {
+			assignment.setNature(Assignment.Nature.Variable);
+			assignment.setName(getName((ASTName) variable.jjtGetChild(0)));
+			assignment.setType(getNameType((ASTName) variable.jjtGetChild(0)));
+			assignment.setExpression((ASTExpression)node.children[1]);
+		}
+		else if(variable instanceof ASTArray) {
+			//todo : arrays, positions need to be introduced to assignment class for array assignments
+			// ie : arr[0,3] = 0; //// atm only "arr" the name and "0" the expression are stored
+			assignment.setNature(Assignment.Nature.Array);
+			String name = getName((ASTName) variable.jjtGetChild(0));
+			throw new RuntimeException("Not implemented");
+		}
+		else {
+			throw new UnknownChildException(variable);
+		}
+		assignment.digest();
+		((ProgramGraph)data).push(assignment);
 		return null;
+	}
+
+	private String getName(ASTName name) {
+		if(name.children[0] instanceof ASTNumberIdentifier) {
+			return ((ASTNumberIdentifier) name.children[0]).value;
+		}
+		else if(name.children[0] instanceof ASTStringIdentifier) {
+			return ((ASTStringIdentifier) name.children[0]).value;
+		}
+		throw new UnknownChildException(name.children[0]);
+	}
+
+	private ASTName.NameType getNameType(ASTName name) {
+		if(name.children[0] instanceof ASTNumberIdentifier) {
+			return ASTName.NameType.Number;
+		}
+		else if(name.children[0] instanceof ASTStringIdentifier) {
+			return ASTName.NameType.String;
+		}
+		throw new UnknownChildException(name.children[0]);
 	}
 
 	public Object visit(ASTlineStatement node, Object data) {
@@ -394,61 +451,59 @@ public class BasicVisitor implements BasicParserVisitor {
 	public Object visit(ASTprintText node, Object data) {
 		return null;
 	}
-        
-        public Object visit(ASTStringLiteral node, Object data) {
-	    return null;
-	}
 
-        
-    
-    /*
-
-        public Object visit(ASTPrimaryPrefix node, Object data) {
-	        node.childrenAccept(this,data);
+	public Object visit(ASTStringLiteral node, Object data) {
 		return null;
 	}
 
-        public Object visit(ASTPrimaryExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
 
-    
-        public Object visit(ASTExponentialExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-		}
+	/*
 
-        public Object visit(ASTMultiplicativeExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
+	   public Object visit(ASTPrimaryPrefix node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
 
-        public Object visit(ASTAdditiveExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
+	   public Object visit(ASTPrimaryExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
 
-        public Object visit(ASTRelationalExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
 
-        public Object visit(ASTComparisonExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
+	   public Object visit(ASTExponentialExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+	   }
 
-        public Object visit(ASTLogicalAndExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-	}
+	   public Object visit(ASTMultiplicativeExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
 
-        public Object visit(ASTLogicalOrExpression node, Object data) {
-	        node.childrenAccept(this,data);
-		return null;
-		}*/
+	   public Object visit(ASTAdditiveExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
 
-    
+	   public Object visit(ASTRelationalExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
+
+	   public Object visit(ASTComparisonExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
+
+	   public Object visit(ASTLogicalAndExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+   }
+
+	   public Object visit(ASTLogicalOrExpression node, Object data) {
+		   node.childrenAccept(this,data);
+	   return null;
+	   }*/
+
 
 }
