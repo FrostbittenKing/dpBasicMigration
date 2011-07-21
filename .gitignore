@@ -13,3 +13,5 @@
 java-gen
 build
 !.gitignore
+bin
+.classpath
