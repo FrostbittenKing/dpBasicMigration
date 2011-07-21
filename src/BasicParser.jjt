@@ -511,13 +511,13 @@ void BasicFunctions() :
 |	Sine()
 |	Space()
 |	Squareroot()
-|	StringToInt()
+|	StrToNum()
 |	StickX()
 |	StickY()
 |	Tab()
 |	Tangens()
 |	UserProgram()
-|	IntToString()
+|	NumToStr()
 |	KeyCharacter()
 }
 
@@ -643,7 +643,7 @@ void Squareroot() :
 	<SQR>	ParameterDeclaration(1)
 }
 
-void StringToInt() :
+void NumToStr() :
 {}
 {
 	<STR>	ParameterDeclaration(1)
@@ -681,7 +681,7 @@ void UserProgram() :
 	<USR>
 }
 
-void IntToString() :
+void StrToNum() :
 {}
 {
 	<VAL>	ParameterDeclaration(1)

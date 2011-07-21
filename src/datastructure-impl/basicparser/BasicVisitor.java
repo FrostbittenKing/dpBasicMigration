@@ -6,18 +6,7 @@ import java.lang.RuntimeException;
 import java.util.LinkedList;
 
 import basicparser.*;
-import basicparser.ASTArray;
-import basicparser.ASTExpression;
-import basicparser.ASTName;
-import basicparser.ASTNumberIdentifier;
-import basicparser.ASTSimpleVariable;
-import basicparser.ASTStringIdentifier;
-import basicparser.Node;
-import basicparser.SimpleNode;
 import basicparser.programflow.*;
-import basicparser.programflow.UnknownChildException;
-import basicparser.programflow.VariableTable;
-import basicparser.programflow.ExpressionTranslator;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
@@ -131,6 +120,10 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTAbsolute node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction abs = new InstantSimpleInstruction("Math.abs(" + javaParameter + ");");
+		((ProgramGraph)data).push(abs);
 		return null;
 	}
 
@@ -143,10 +136,18 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTAtan node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction atan = new InstantSimpleInstruction("Math.atan(" + javaParameter + ");");
+		((ProgramGraph)data).push(atan);
 		return null;
 	}
 
 	public Object visit(ASTCosine node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction cos = new InstantSimpleInstruction("Math.cos(" + javaParameter + ");");
+		((ProgramGraph)data).push(cos);
 		return null;
 	}
 
@@ -155,6 +156,10 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTExponent node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction exp = new InstantSimpleInstruction("Math.pow(Math.E, " + javaParameter + ");");
+		((ProgramGraph)data).push(exp);
 		return null;
 	}
 
@@ -171,10 +176,18 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTLogarithm node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction log = new InstantSimpleInstruction("Math.log(" + javaParameter + ");");
+		((ProgramGraph)data).push(log);
 		return null;
 	}
 
 	public Object visit(ASTMaxint node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction ceil = new InstantSimpleInstruction("Math.ceil(" + javaParameter + ");");
+		((ProgramGraph)data).push(ceil);
 		return null;
 	}
 
@@ -199,6 +212,10 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTSine node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction sin = new InstantSimpleInstruction("Math.sin(" + javaParameter + ");");
+		((ProgramGraph)data).push(sin);
 		return null;
 	}
 
@@ -207,10 +224,19 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTSquareroot node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction sqrt = new InstantSimpleInstruction("Math.sqrt(" + javaParameter + ");");
+		((ProgramGraph)data).push(sqrt);
 		return null;
 	}
 
-	public Object visit(ASTStringToInt node, Object data) {
+	public Object visit(ASTNumToStr node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction str = new InstantSimpleInstruction("new Double(" + javaParameter + ").toString();");
+		((ProgramGraph)data).push(str);
+		
 		return null;
 	}
 
@@ -227,6 +253,10 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTTangens node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		InstantSimpleInstruction tan = new InstantSimpleInstruction("Math.tan(" + javaParameter + ");");
+		((ProgramGraph)data).push(tan);
 		return null;
 	}
 
@@ -234,7 +264,12 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-	public Object visit(ASTIntToString node, Object data) {
+	public Object visit(ASTStrToNum node, Object data) {
+		ASTExpression parameter = (ASTExpression)node.children[0].jjtGetChild(0).jjtGetChild(0);
+		String javaParameter = ExpressionTranslator.instance().translate(parameter);
+		Val val = new Val(javaParameter);
+		((ProgramGraph)data).push(val);
+		
 		return null;
 	}
 
