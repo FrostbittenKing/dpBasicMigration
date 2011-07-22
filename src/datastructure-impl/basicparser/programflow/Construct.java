@@ -2,7 +2,7 @@ package basicparser.programflow;
 
 public abstract class Construct {
 	private int label;
-	private Construct next;
+	private Construct next = null;
 
 	public abstract String translate();
 

@@ -12,9 +12,9 @@ public class ProgramGraph {
 			first = construct;
 		}
 		else {
-			for(Construct c = first; c.getNext() != null; c = c.getNext()) {
-				c.setNext(construct);
-			}
+			Construct c;
+			for(c = first; c.getNext() != null; c = c.getNext());
+			c.setNext(construct);
 		}
 	}
 

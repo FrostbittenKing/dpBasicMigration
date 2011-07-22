@@ -22,6 +22,7 @@ public class InstantSimpleInstruction extends Instruction{
 
 	@Override
 	public String translate(){
+		System.out.println("TRANSLATE ISI");
 		return java + "\r\n";
 	}
 }

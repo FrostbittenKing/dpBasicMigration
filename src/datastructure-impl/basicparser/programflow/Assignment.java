@@ -90,7 +90,15 @@ public class Assignment extends Instruction{
 
 	@Override
 	public String translate(){
-		return name + " = " + ExpressionTranslator.instance().translate(expression) + ";";
+		switch(type) {
+			case Number:
+				return name + ".assign(" + ExpressionTranslator.instance().translate(expression) + ");";
+			case String:
+				return name + " = " + ExpressionTranslator.instance().translate(expression) + ";";
+			default:
+				break;
+		}
+		throw new RuntimeException("Unknown type " + type);
 	}
 
 	public static enum Nature {
