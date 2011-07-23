@@ -9,7 +9,7 @@ import java.lang.String;
 import java.lang.StringBuffer;
 import java.util.LinkedList;
 
-public class Assignment extends Instruction{
+public class Assignment extends Instruction {
 	private ASTName.NameType type;
 	private Nature nature;
 	private String name;
@@ -36,16 +36,24 @@ public class Assignment extends Instruction{
 			case Variable:
 				switch(type) {
 					case Number:
-						if(VariableTable.instance().contains(name) && !VariableTable.instance().getNumbers().contains(name)) {
-							throw new RuntimeException("Variable name not unique to number variables : " + name);
+						if(VariableTable.instance().contains(name)) {
+							if(!VariableTable.instance().getNumbers().contains(name)) {
+								throw new RuntimeException("Variable name not unique to number variables : " + name);
+							}
 						}
-						VariableTable.instance().getNumbers().add(name);
+						else {
+							VariableTable.instance().getNumbers().add(name);
+						}
 						break;
 					case String:
-						if(VariableTable.instance().contains(name) && !VariableTable.instance().getStrings().contains(name)) {
-							throw new RuntimeException("Variable name not unique to string variables: " + name);
+						if(VariableTable.instance().contains(name)) {
+							if(!VariableTable.instance().getStrings().contains(name)) {
+								throw new RuntimeException("Variable name not unique to string variables: " + name);
+							}
 						}
-						VariableTable.instance().getStrings().add(name);
+						else {
+							VariableTable.instance().getStrings().add(name);
+						}
 						break;
 					default:
 						throw new RuntimeException("Unknown type " + type);
@@ -89,7 +97,7 @@ public class Assignment extends Instruction{
 	}
 
 	@Override
-	public String translate(){
+	public String translate() {
 		switch(type) {
 			case Number:
 				return name + ".assign(" + ExpressionTranslator.instance().translate(expression) + ");";

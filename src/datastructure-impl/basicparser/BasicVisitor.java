@@ -4,12 +4,18 @@ import java.lang.Integer;
 import java.lang.NumberFormatException;
 import java.lang.RuntimeException;
 import java.util.LinkedList;
+import java.util.Stack;
 
 import basicparser.*;
 import basicparser.programflow.*;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
+	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
+
+	public BasicVisitor(ProgramGraph programGraph) {
+		containerStack.push(programGraph);
+	}
 
 	public Object visit(SimpleNode node, Object data) {
 		return null;
@@ -341,7 +347,7 @@ public class BasicVisitor implements BasicParserVisitor {
 			throw new UnknownChildException(variable);
 		}
 		assignment.digest();
-		((ProgramGraph)data).push(assignment);
+		top().push(assignment);
 		return null;
 	}
 
@@ -426,10 +432,19 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTforLoopStatement node, Object data) {
+		String var = getName((ASTName)node.children[0].jjtGetChild(0).jjtGetChild(0));
+		ASTExpression initial = (ASTExpression)node.children[1];
+		ASTExpression boundary = (ASTExpression)node.children[2];
+		ASTExpression step = node.children.length > 3 ? (ASTExpression)node.children[3] : null;
+
+		Loop loop = new Loop(initial, boundary, step, var);
+		top().push(loop);
+		containerStack.push(loop);
 		return null;
 	}
 
 	public Object visit(ASTnextStatement node, Object data) {
+		containerStack.pop();
 		return null;
 	}
 
@@ -494,5 +509,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	   return null;
 	   }*/
 
-
+		private ConstructContainer top() {
+			return containerStack.peek();
+		}
 }

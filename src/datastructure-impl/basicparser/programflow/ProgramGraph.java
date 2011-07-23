@@ -2,9 +2,8 @@ package basicparser.programflow;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.Object;
 
-public class ProgramGraph {
+public class ProgramGraph implements ConstructContainer {
 	private Construct first;
 
 	public void push(Construct construct) {
