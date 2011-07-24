@@ -510,8 +510,16 @@ public class BasicVisitor implements BasicParserVisitor {
 		   node.childrenAccept(this,data);
 	   return null;
 	   }*/
+	
+	
 
 		private ConstructContainer top() {
 			return containerStack.peek();
+		}
+
+		@Override
+		public Object visit(ASTendIf node, Object data) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }

@@ -150,14 +150,12 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTVariable node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return ((Object[])data)[0];
 	}
 
 	@Override
 	public Object visit(ASTSimpleVariable node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return ((Object[])data)[0];
 	}
 
 	@Override
@@ -174,8 +172,7 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTName node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return ((Object[])data)[0];
 	}
 
 	@Override
@@ -253,6 +250,14 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTAbsolute node, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+
+	@Override
+	public Object visit(ASTendIf node, Object data) {
 		// TODO Auto-generated method stub
 		return null;
 	}
