@@ -316,6 +316,10 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTIf node, Object data) {
+		ASTExpression condition = (ASTExpression)node.children[0];
+		if(node.children[1] instanceof ASTStatement) {
+
+		}
 		return null;
 	}
 
@@ -459,8 +463,8 @@ public class BasicVisitor implements BasicParserVisitor {
 	public Object visit(ASTStringLiteral node, Object data) {
 		return null;
 	}
-	
-	
+
+
 
 
 	/*
