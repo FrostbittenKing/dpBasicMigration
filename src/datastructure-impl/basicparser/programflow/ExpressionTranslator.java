@@ -42,7 +42,7 @@ public class ExpressionTranslator {
 		if (tempval != null) {
 			javaExpression += tempval;
 		}*/
-		while (node.jjtGetNumChildren() == 1) {
+		while (node instanceof ASTExpression) {
 			node = (SimpleNode)node.jjtGetChild(0);
 		}
 
@@ -51,7 +51,7 @@ public class ExpressionTranslator {
 			javaExpression[i] = "";
 		}
 
-		if (node.jjtGetNumChildren() >= 2) {
+		if (node.jjtGetNumChildren() >= 1) {
 			for (int i = 0; i < javaExpression.length; i++) {
 				javaExpression[i] += build((SimpleNode)node.jjtGetChild(i),visitor);
 			}

@@ -314,11 +314,12 @@ void ExponentialExpression() #void :
 }
 
 void UnaryExpression()  #void :
-{}
+{
+}
 {
 	(PrimaryExpression()
-|	("-") UnaryExpression()
-|	BasicFunctions()) #UnaryExpression(>1)
+|	("-") UnaryExpression() {jjtThis.toggleSignum();}
+|	BasicFunctions()) #UnaryExpression
 }
 
 // ** SUBJECT TO CHANGE */

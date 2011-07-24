@@ -3,9 +3,6 @@ package basicparser.programflow;
 import basicparser.*;
 
 import java.lang.String;
-import java.lang.StringBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class BasicFunctionsTranslator {
 	public String translate(ASTCosine cos) {

@@ -60,6 +60,84 @@ public class MultiNumber {
 		}
 	}
 	
+	public static MultiNumber sub(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() - b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() - b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() - b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() - b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber mul(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() * b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() * b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() * b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() * b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber div(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() / b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() / b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() / b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() / b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber exp(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(Math.pow(a.getIntegerValue(),b.getIntegerValue()));
+			}
+			else {
+				return new MultiNumber(Math.pow(a.getIntegerValue(),b.getDoubleValue()));
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(Math.pow(a.getDoubleValue(),b.getIntegerValue()));
+			}
+			else {
+				return new MultiNumber(Math.pow(a.getDoubleValue(),b.getDoubleValue()));
+			}
+		}
+	}
+	
+	
+	
 	public static MultiNumber ge(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -77,6 +155,130 @@ public class MultiNumber {
 				return new MultiNumber(a.getDoubleValue() >= b.getDoubleValue());
 			}
 		}
+	}
+	
+	public static MultiNumber gt(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() > b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() > b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() > b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() > b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber lt(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() < b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() < b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() < b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() < b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber le(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() <= b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue() <= b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() <= b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() <= b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber ne(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() != b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue().doubleValue() != b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() != b.getIntegerValue().doubleValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() != b.getDoubleValue());
+			}
+		}
+	}
+	
+	public static MultiNumber and(MultiNumber a, MultiNumber b) throws Exception {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() & b.getIntegerValue());
+			}
+		}
+		throw new Exception("Error, cannot do binary operations on double values");
+	}
+	
+	public static MultiNumber or(MultiNumber a, MultiNumber b) throws Exception {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() | b.getIntegerValue());
+			}
+		}
+		throw new Exception("Error, cannot do binary operations on double values");
+	}
+	
+	public static MultiNumber compare(MultiNumber a, MultiNumber b) {
+		if (!a.isDouble) {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getIntegerValue() == b.getIntegerValue());
+			}
+			else {
+				return new MultiNumber(a.getIntegerValue().doubleValue() == b.getDoubleValue());
+			}
+		}
+		else {
+			if (!b.isDouble) {
+				return new MultiNumber(a.getDoubleValue() == b.getIntegerValue().doubleValue());
+			}
+			else {
+				return new MultiNumber(a.getDoubleValue() == b.getDoubleValue());
+			}
+		}
+	}
+	
+	
+	public static MultiNumber toggleSignum(MultiNumber a) {
+		if (a.isDouble) {
+			a.dvalue *= -1;
+		}
+		else {
+			a.ivalue *= -1;
+		}
+		return a;
 	}
 
 }

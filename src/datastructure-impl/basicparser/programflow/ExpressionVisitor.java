@@ -1,5 +1,9 @@
 package basicparser.programflow;
 
+import java.lang.reflect.Method;
+
+import javax.management.ReflectionException;
+
 import basicparser.*;
 
 public class ExpressionVisitor implements BasicParserVisitor {
@@ -35,41 +39,53 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTLogicalOr node, Object data) {
-		return "MultiNumber.or(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			returnVal = "MultiNumber.or(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTLogicalAnd node, Object data) {
-		return "MultiNumber.and(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			returnVal = "MultiNumber.and(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTComparisonExp node, Object data) {
-		return "MultiNumber.compare(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			returnVal = "MultiNumber.compare(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTRelationalExp node, Object data) {
-		String returnVal = new String();
-				
+		String returnVal = ((String[])(data))[0];
+
 		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
 			switch(node.typeList.get(i)) {
 			case GreaterEqual:
 				returnVal = "MultiNumber.ge(" + returnVal + "," + ((String[])(data))[i+1] + ")";
 				break;
-				
+
 			case Greater:
 				returnVal = "MultiNumber.gt(" + returnVal + "," + ((String[])(data))[i+1] + ")";
 				break;
-				
+
 			case Lesser:
 				returnVal = "MultiNumber.lt(" + returnVal + "," + ((String[])(data))[i+1] + ")";
 				break;
-				
+
 			case LesserEqual:
 				returnVal = "MultiNumber.le(" + returnVal + "," + ((String[])(data))[i+1] + ")";
 				break;
-				
+
 			case Unequal:
 				returnVal = "MultiNumber.ne(" + returnVal + "," + ((String[])(data))[i+1] + ")";
 				break;
@@ -108,13 +124,22 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTExp node, Object data) {
-		return "MultiNumber.exp(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			returnVal = "MultiNumber.exp(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTUnaryExpression node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		String returnVal = ((String[])(data))[0];
+		if (node.isSignum()) {
+			return "MultiNumber.toggleSignum(" + returnVal + ")";
+		}
+		else {
+			return returnVal;
+		}
 	}
 
 	@Override
@@ -211,8 +236,18 @@ public class ExpressionVisitor implements BasicParserVisitor {
 	}
 
 	@Override
-	public Object visit(ASTBasicFunctions node, Object data) {
-		// TODO Auto-generated method stub
+	public Object visit(ASTBasicFunctions node, Object data){
+		Class<?> basicFunctionsTranslator;
+		String returnVal;
+		try {
+			basicFunctionsTranslator = Class.forName("basicparser.programflow.BasicFunctionsTranslator");
+			Method method = basicFunctionsTranslator.getDeclaredMethod("translate", node.jjtGetChild(0).getClass());
+			returnVal = (String)method.invoke(BasicFunctionsTranslator.instance(), node.jjtGetChild(0));
+			return returnVal;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -320,7 +355,6 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTSine node, Object data) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
