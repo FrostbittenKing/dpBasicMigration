@@ -2,8 +2,12 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=BaseNode,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package basicparser;
 
+import java.util.LinkedList;
+
 public
 class ASTAdd extends SimpleNode {
+	public LinkedList<Type> typeList = new LinkedList<ASTAdd.Type>();
+	
   public ASTAdd(int id) {
     super(id);
   }
@@ -17,5 +21,36 @@ class ASTAdd extends SimpleNode {
   public Object jjtAccept(BasicParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
+  
+  public static enum Type {
+		Add("+", "+"),
+		Sub("-", "-");
+
+		private String identity;
+		private String javaIdentity;
+
+		Type(String identity, String javaIdentity) {
+			this.identity = identity;
+			this.javaIdentity = javaIdentity;
+		}
+
+		public String getIdentity() {
+			return identity;
+		}
+
+		public String getJavaIdentity() {
+			return javaIdentity;
+		}
+
+		public static Type fromIdentity(String s) {
+			if(Add.getIdentity().equals(s)) {
+				return Add;
+			}
+			else if(Sub.getIdentity().equals(s)) {
+				return Sub;
+			}
+			throw new RuntimeException("Unknown identity " + s);
+		}
+	}
 }
 /* JavaCC - OriginalChecksum=9bd3b65022cbcc8601d52b03f376e3f9 (do not edit this line) */

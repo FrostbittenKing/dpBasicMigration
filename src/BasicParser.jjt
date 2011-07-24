@@ -257,11 +257,11 @@ void parseCommand():
 }
 
 
-void Expression() #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral)) :
+void Expression() #void :
 {
 }
 {
-	(LogicalOrExpression())
+	(LogicalOrExpression()) #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral)) 
 }
 
 void LogicalOrExpression() #void :
@@ -287,14 +287,16 @@ void RelationalExpression() #void :
 		Token t;
 }
 {
-	(AdditiveExpression() ( (t="<" | t=">" | t="<=" | t=">=" | t="<>") {jjtThis.type = ASTRelationalExp.Type.fromIdentity(t.image);} AdditiveExpression() )*) #RelationalExp(>1)
+	(AdditiveExpression() ( (t="<" | t=">" | t="<=" | t=">=" | t="<>") {jjtThis.typeList.add(ASTRelationalExp.Type.fromIdentity(t.image));} AdditiveExpression() )*) #RelationalExp(>1)
 }
 
 
 void AdditiveExpression() #void :
-{}
+{    
+     Token t;
+}
 {
-	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1)("+" | "-") MultiplicativeExpression())*) #Add(>1)
+	(MultiplicativeExpression() ( /** WARNING SUPPRESSED, I HOPE I KNOW WHAT I'M DOING**/ LOOKAHEAD(1) (t="+" | t="-") {jjtThis.typeList.add(ASTAdd.Type.fromIdentity(t.image));} MultiplicativeExpression())*) #Add(>1)
 }
 
 void MultiplicativeExpression() #void  :
@@ -302,7 +304,7 @@ void MultiplicativeExpression() #void  :
 	Token t;
 }
 {
-	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.type = ASTMult.Type.fromIdentity(t.image);} ExponentialExpression())*) #Mult(>1)
+	(ExponentialExpression() ( ( t="*" | t="/") {jjtThis.typeList.add(ASTMult.Type.fromIdentity(t.image));} ExponentialExpression())*) #Mult(>1)
 }
 
 void ExponentialExpression() #void :
@@ -312,11 +314,12 @@ void ExponentialExpression() #void :
 }
 
 void UnaryExpression()  #void :
-{}
+{
+}
 {
 	(PrimaryExpression()
-|	("-") UnaryExpression()
-|	BasicFunctions()) #UnaryExpression(>1)
+|	("-") UnaryExpression() {jjtThis.toggleSignum();}
+|	BasicFunctions()) #UnaryExpression
 }
 
 // ** SUBJECT TO CHANGE */
