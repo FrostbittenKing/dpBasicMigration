@@ -50,14 +50,14 @@ public class BasicFunctionsTranslator {
 	public String translate(ASTSine asine) {
 		ASTExpression parameter = (ASTExpression)asine.jjtGetChild(0).jjtGetChild(0).jjtGetChild(0);
 		String javaParameter = ExpressionTranslator.instance().translate(parameter);
-		String result = "Math.sin(" + javaParameter + ");";
+		String result = "MultiNumber.mathFunction(" + "\"sin\"," + javaParameter + ")";
 		return result;
 	}
 
 	public String translate(ASTSquareroot sqr) {
 		ASTExpression parameter = (ASTExpression)sqr.jjtGetChild(0).jjtGetChild(0).jjtGetChild(0);
 		String javaParameter = ExpressionTranslator.instance().translate(parameter);
-		String result = "Math.sqrt(" + javaParameter + ");";
+		String result = "MultiNumber.mathFunction(" + "\"sqrt\"," + javaParameter + ")";
 		return result;
 	}
 
