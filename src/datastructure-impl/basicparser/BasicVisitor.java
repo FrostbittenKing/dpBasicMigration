@@ -8,6 +8,8 @@ import java.util.Stack;
 
 import basicparser.*;
 import basicparser.programflow.*;
+import basicparser.programflow.Goto;
+import basicparser.programflow.If;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
@@ -308,6 +310,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTgotoStatement node, Object data) {
+		top().push(new Goto());
 		return null;
 	}
 
@@ -317,9 +320,14 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	public Object visit(ASTIf node, Object data) {
 		ASTExpression condition = (ASTExpression)node.children[0];
-		if(node.children[1] instanceof ASTStatement) {
+		If ifStatement = new If(condition);
+		top().push(ifStatement);
+		containerStack.push(ifStatement);
+		return null;
+	}
 
-		}
+	public Object visit(ASTendIf node, Object data) {
+		containerStack.pop();
 		return null;
 	}
 

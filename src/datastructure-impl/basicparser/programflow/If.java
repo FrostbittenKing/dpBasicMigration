@@ -1,17 +1,23 @@
 package basicparser.programflow;
 
 import basicparser.ASTExpression;
+import basicparser.programflow.Construct;
+import basicparser.programflow.ConstructContainer;
 import basicparser.programflow.ExpressionTranslator;
 
 import javax.sound.midi.Sequence;
 import java.lang.String;
 
-public class If extends Construct {
+public class If extends Construct implements ConstructContainer {
 	private ASTExpression condition;
-	private Instruction instruction;
+	private Construct instruction;
 
 	public If(ASTExpression condition) {
 		this.condition = condition;
+	}
+
+	public void push(Construct construct) {
+		instruction = construct;
 	}
 
 	public String translate() {
