@@ -2,6 +2,7 @@ package basicparser.programflow;
 
 import basicparser.ASTExpression;
 import basicparser.BasicVisitor;
+import basicparser.JJTBasicParserState;
 import basicparser.SimpleNode;
 
 import java.lang.String;
@@ -12,8 +13,10 @@ import java.util.LinkedList;
 public class ExpressionTranslator {
 	public String translate(ASTExpression expression) {
 		//todo eugen
-		build(expression,null);
-		return "";
+		String javaExpression = new String();
+		ExpressionVisitor exp = new ExpressionVisitor();
+		javaExpression = build((SimpleNode)expression.jjtGetChild(0),exp);
+		return javaExpression;
 	}
 
 
@@ -23,16 +26,43 @@ public class ExpressionTranslator {
 		}
 		return instance;
 	}
-	
-	
+
+
 
 	private static ExpressionTranslator instance;
-	
-	private void build(SimpleNode node, ExpressionVisitor visitor) {
-		for(int i = 0; i < node.jjtGetNumChildren(); i++) {
+	private String build(SimpleNode node, ExpressionVisitor visitor) {
+		String[] javaExpression;	
+		String returnVal = new String();
+		/*		for(int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode child = (SimpleNode)node.jjtGetChild(i);
-			build(child, visitor);
-			node.jjtAccept(visitor, null);
+			javaExpression += build(child, visitor);
+
 		}
+		String tempval = (String)node.jjtAccept(visitor,null);
+		if (tempval != null) {
+			javaExpression += tempval;
+		}*/
+		while (node.jjtGetNumChildren() == 1) {
+			node = (SimpleNode)node.jjtGetChild(0);
+		}
+
+		javaExpression = new String[node.jjtGetNumChildren()];
+		for (int i = 0; i < javaExpression.length; i++) {
+			javaExpression[i] = "";
+		}
+
+		if (node.jjtGetNumChildren() >= 2) {
+			for (int i = 0; i < javaExpression.length; i++) {
+				javaExpression[i] += build((SimpleNode)node.jjtGetChild(i),visitor);
+			}
+			returnVal = (String)node.jjtAccept(visitor,javaExpression);
+		}
+		else {
+			String tempval = (String)node.jjtAccept(visitor,null);
+			if (tempval != null) {
+				returnVal += tempval;
+			}
+		}
+		return returnVal;
 	}
 }

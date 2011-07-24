@@ -1,102 +1,6 @@
 package basicparser.programflow;
 
-import basicparser.ASTAbsolute;
-import basicparser.ASTAction;
-import basicparser.ASTAdd;
-import basicparser.ASTArray;
-import basicparser.ASTArrayDeclaration;
-import basicparser.ASTAscii;
-import basicparser.ASTAtan;
-import basicparser.ASTBasicFunctions;
-import basicparser.ASTChar;
-import basicparser.ASTComparisonExp;
-import basicparser.ASTCosine;
-import basicparser.ASTDimStatement;
-import basicparser.ASTExp;
-import basicparser.ASTExponent;
-import basicparser.ASTExpression;
-import basicparser.ASTFreeBytes;
-import basicparser.ASTIf;
-import basicparser.ASTIntToString;
-import basicparser.ASTKeyCharacter;
-import basicparser.ASTLeft;
-import basicparser.ASTLength;
-import basicparser.ASTLineNumber;
-import basicparser.ASTLiteral;
-import basicparser.ASTLogarithm;
-import basicparser.ASTLogicalAnd;
-import basicparser.ASTLogicalOr;
-import basicparser.ASTMaxint;
-import basicparser.ASTMult;
-import basicparser.ASTName;
-import basicparser.ASTNumberIdentifier;
-import basicparser.ASTNumericExpressionParameter;
-import basicparser.ASTParameter;
-import basicparser.ASTParameterDeclaration;
-import basicparser.ASTPosition;
-import basicparser.ASTPrimaryExp;
-import basicparser.ASTRandom;
-import basicparser.ASTRelationalExp;
-import basicparser.ASTRight;
-import basicparser.ASTSignum;
-import basicparser.ASTSimpleVariable;
-import basicparser.ASTSine;
-import basicparser.ASTSpace;
-import basicparser.ASTSquareroot;
-import basicparser.ASTStatement;
-import basicparser.ASTStickX;
-import basicparser.ASTStickY;
-import basicparser.ASTStringIdentifier;
-import basicparser.ASTStringLiteral;
-import basicparser.ASTStringToInt;
-import basicparser.ASTSubstring;
-import basicparser.ASTTab;
-import basicparser.ASTTangens;
-import basicparser.ASTUnaryExpression;
-import basicparser.ASTUserProgram;
-import basicparser.ASTVariable;
-import basicparser.ASTVariableLengthParameter;
-import basicparser.ASTbrightStatement;
-import basicparser.ASTclearStatement;
-import basicparser.ASTcontStatement;
-import basicparser.ASTcursorXStatement;
-import basicparser.ASTcursorYStatement;
-import basicparser.ASTdataStatement;
-import basicparser.ASTdefStatement;
-import basicparser.ASTdelimStatement;
-import basicparser.ASTdisplayStatement;
-import basicparser.ASTendStatement;
-import basicparser.ASTforLoopStatement;
-import basicparser.ASTfunctionDefBody;
-import basicparser.ASTfunctionDefName;
-import basicparser.ASTgosubStatement;
-import basicparser.ASTgotoStatement;
-import basicparser.ASTgrStatement;
-import basicparser.ASTinitStatement;
-import basicparser.ASTinputStatement;
-import basicparser.ASTletStatement;
-import basicparser.ASTlineStatement;
-import basicparser.ASTlistStatement;
-import basicparser.ASTnewStatement;
-import basicparser.ASTnextStatement;
-import basicparser.ASTonStatement;
-import basicparser.ASTpageStatement;
-import basicparser.ASTparseCommand;
-import basicparser.ASTparseRoot;
-import basicparser.ASTprintStatement;
-import basicparser.ASTprintText;
-import basicparser.ASTreadStatement;
-import basicparser.ASTrestoreStatement;
-import basicparser.ASTreturnStatement;
-import basicparser.ASTrunStatement;
-import basicparser.ASTscreenStatement;
-import basicparser.ASTscrollStatement;
-import basicparser.ASTsoundStatement;
-import basicparser.ASTstopStatement;
-import basicparser.ASTstoreStatement;
-import basicparser.ASTtxStatement;
-import basicparser.BasicParserVisitor;
-import basicparser.SimpleNode;
+import basicparser.*;
 
 public class ExpressionVisitor implements BasicParserVisitor {
 
@@ -126,50 +30,85 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTExpression node, Object data) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object visit(ASTLogicalOr node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return "MultiNumber.or(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
 	}
 
 	@Override
 	public Object visit(ASTLogicalAnd node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return "MultiNumber.and(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
 	}
 
 	@Override
 	public Object visit(ASTComparisonExp node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return "MultiNumber.compare(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
 	}
 
 	@Override
 	public Object visit(ASTRelationalExp node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		String returnVal = new String();
+				
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			switch(node.typeList.get(i)) {
+			case GreaterEqual:
+				returnVal = "MultiNumber.ge(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+				break;
+				
+			case Greater:
+				returnVal = "MultiNumber.gt(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+				break;
+				
+			case Lesser:
+				returnVal = "MultiNumber.lt(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+				break;
+				
+			case LesserEqual:
+				returnVal = "MultiNumber.le(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+				break;
+				
+			case Unequal:
+				returnVal = "MultiNumber.ne(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+				break;
+			}
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTAdd node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			if (node.typeList.get(i) == ASTAdd.Type.Add) {
+				returnVal = "MultiNumber.add(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+			}
+			else {
+				returnVal = "MultiNumber.sub(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+			}
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTMult node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		String returnVal = ((String[])(data))[0];
+		for (int i = 0; i < node.jjtGetNumChildren()-1; i++) {
+			if (node.typeList.get(i) == ASTMult.Type.Mul) {
+				returnVal = "MultiNumber.mul(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+			}
+			else {
+				returnVal = "MultiNumber.div(" + returnVal + "," + ((String[])(data))[i+1] + ")";
+			}
+		}
+		return returnVal;
 	}
 
 	@Override
 	public Object visit(ASTExp node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return "MultiNumber.exp(" +  ((String[])(data))[0] + "," + ((String[])(data))[1] + ")";
 	}
 
 	@Override
@@ -216,26 +155,23 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTStringIdentifier node, Object data) {
-		
+
 		return null;
 	}
 
 	@Override
 	public Object visit(ASTNumberIdentifier node, Object data) {
-		
-		// TODO Auto-generated method stub
-		return null;
+		return node.value;
 	}
 
 	@Override
 	public Object visit(ASTLiteral node, Object data) {
 		if (node.integerValue != null) {
-			data = new MultiNumber(node.integerValue);
+			return "new MultiNumber(" + node.integerValue + ")";
 		}
 		else {
-			data = new MultiNumber(node.doubleValue);
+			return "new MultiNumber(" + node.doubleValue + ")";
 		}
-		return null;
 	}
 
 	@Override
@@ -401,12 +337,6 @@ public class ExpressionVisitor implements BasicParserVisitor {
 	}
 
 	@Override
-	public Object visit(ASTStringToInt node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Object visit(ASTStickX node, Object data) {
 		// TODO Auto-generated method stub
 		return null;
@@ -432,12 +362,6 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTUserProgram node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object visit(ASTIntToString node, Object data) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -681,5 +605,19 @@ public class ExpressionVisitor implements BasicParserVisitor {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Object visit(ASTNumToStr node, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTStrToNum node, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }
