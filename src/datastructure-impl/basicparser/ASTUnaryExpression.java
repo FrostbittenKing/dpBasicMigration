@@ -4,18 +4,36 @@ package basicparser;
 
 public
 class ASTUnaryExpression extends SimpleNode {
-  public ASTUnaryExpression(int id) {
-    super(id);
-  }
 
-  public ASTUnaryExpression(BasicParser p, int id) {
-    super(p, id);
-  }
+	private boolean signum = false;
+
+	public ASTUnaryExpression(int id) {
+		super(id);
+	}
+
+	public ASTUnaryExpression(BasicParser p, int id) {
+		super(p, id);
+	}
 
 
-  /** Accept the visitor. **/
-  public Object jjtAccept(BasicParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. **/
+	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
+
+	public boolean isSignum() {
+		return signum;
+	}
+
+	public void toggleSignum() {
+		if (signum) {
+			signum = false;
+		}
+		else {
+			signum = true;
+		}
+	}
+	
+	
 }
 /* JavaCC - OriginalChecksum=e69c85478576d4f358906f18b258e7ee (do not edit this line) */
