@@ -1,5 +1,11 @@
 package basicparser.programflow;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
+import javax.swing.text.rtf.RTFEditorKit;
+
 public class MultiNumber {
 	private Integer ivalue;
 	private Double dvalue;
@@ -32,6 +38,12 @@ public class MultiNumber {
 	public boolean IsDouble() {
 		return isDouble;
 	}
+	
+	
+
+	public void setDouble(boolean isDouble) {
+		this.isDouble = isDouble;
+	}
 
 	public Integer getIntegerValue() {
 		return ivalue;
@@ -39,6 +51,15 @@ public class MultiNumber {
 
 	public Double getDoubleValue() {
 		return dvalue;
+	}
+	
+	public void assign(MultiNumber a) {
+		if (a.isDouble) {
+			dvalue = a.dvalue;
+		}
+		else {
+			ivalue = a.ivalue;
+		}
 	}
 
 	public static MultiNumber add(MultiNumber a, MultiNumber b) {
@@ -282,6 +303,52 @@ public class MultiNumber {
 			a.ivalue *= -1;
 		}
 		return a;
+	}
+	
+	public static MultiNumber mathFunction(String functionName, MultiNumber ...multiNumbers) {
+		Object returnVal = null;
+		try {
+			Class<?> mathClass = Class.forName("java.lang.Math");
+			
+			Object [] parameters = new Object[multiNumbers.length];
+			
+			Method [] mathMethods = mathClass.getDeclaredMethods();
+			Method mathMethod = null;
+			for(Method currentMethod : mathMethods) {
+				if (currentMethod.getName().contentEquals(functionName)) {
+					mathMethod = currentMethod;
+					break;
+				}
+			}
+			
+			int posCount = 0;
+			for (MultiNumber parameter : multiNumbers) {
+				if (parameter.isDouble) {
+					parameters[posCount] = parameter.getDoubleValue();
+					//parameters[posCount] = Class.forName(parameterClasses[posCount].getCanonicalName()).cast(parameter.getDoubleValue());
+				}
+				else {
+					parameters[posCount] = parameter.getIntegerValue();
+			//		parameters[posCount] = Class.forName(className)
+				}
+				posCount++;
+			}
+			
+			
+			
+			if (mathMethod != null) {
+				returnVal = mathMethod.invoke(mathClass, (Object [])parameters);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (returnVal instanceof Double) {
+			return new MultiNumber((Double) returnVal);
+		}
+		else {
+			return new MultiNumber((Integer)returnVal);
+		}
 	}
 
 }

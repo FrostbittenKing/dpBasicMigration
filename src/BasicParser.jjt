@@ -831,10 +831,18 @@ void ifStatement() #If:
 
 	(
 		<THEN> 	( Statement() | lineNumber())
-		       |
+	      		|
 		gotoStatement()
 	)
+	endIf()
 }
+
+void endIf() :
+{}
+{
+	{}
+}
+
 /*
 void ifThenStatement():
 {}
