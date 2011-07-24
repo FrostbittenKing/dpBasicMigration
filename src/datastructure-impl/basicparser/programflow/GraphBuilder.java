@@ -14,10 +14,10 @@ public class GraphBuilder {
 	}
 
 	private void build(SimpleNode node, BasicVisitor visitor) {
+		node.jjtAccept(visitor, null);
 		for(int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode child = (SimpleNode) node.jjtGetChild(i);
 			build(child, visitor);
 		}
-		node.jjtAccept(visitor, null);
 	}
 }

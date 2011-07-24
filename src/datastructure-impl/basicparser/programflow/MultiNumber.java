@@ -24,7 +24,7 @@ public class MultiNumber {
 		this.dvalue = value;
 		isDouble = true;
 	}
-	
+
 	public MultiNumber(boolean value) {
 		if (value) {
 			this.ivalue = 1;
@@ -80,7 +80,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber sub(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -99,7 +99,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber mul(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -118,7 +118,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber div(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -137,7 +137,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber exp(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -156,9 +156,9 @@ public class MultiNumber {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public static MultiNumber ge(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -177,7 +177,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber gt(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -196,7 +196,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber lt(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -215,7 +215,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber le(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -234,7 +234,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber ne(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -253,7 +253,7 @@ public class MultiNumber {
 			}
 		}
 	}
-	
+
 	public static MultiNumber and(MultiNumber a, MultiNumber b) throws Exception {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -262,7 +262,7 @@ public class MultiNumber {
 		}
 		throw new Exception("Error, cannot do binary operations on double values");
 	}
-	
+
 	public static MultiNumber or(MultiNumber a, MultiNumber b) throws Exception {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -271,7 +271,7 @@ public class MultiNumber {
 		}
 		throw new Exception("Error, cannot do binary operations on double values");
 	}
-	
+
 	public static MultiNumber compare(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
 			if (!b.isDouble) {
@@ -290,8 +290,11 @@ public class MultiNumber {
 			}
 		}
 	}
-	
-	
+
+	public boolean isTrue() {
+		return isDouble ? dvalue != 0 : ivalue != 0;
+	}
+
 	public static MultiNumber toggleSignum(MultiNumber a) {
 		if (a.isDouble) {
 			a.dvalue *= -1;
