@@ -20,6 +20,10 @@ public class If extends Construct implements ConstructContainer {
 		instruction = construct;
 	}
 
+	public Construct getFirst() {
+		return instruction;
+	}
+
 	public String translate() {
 		String result = "if(" + ExpressionTranslator.instance().translate(condition) + ".isTrue()) {\r\n";
 		result += instruction.translate() + "\r\n";

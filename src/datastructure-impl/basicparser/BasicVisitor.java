@@ -3,19 +3,26 @@ package basicparser;
 import java.lang.Integer;
 import java.lang.NumberFormatException;
 import java.lang.RuntimeException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Stack;
 
 import basicparser.*;
+import basicparser.ASTLineNumber;
 import basicparser.programflow.*;
+import basicparser.programflow.Assignment;
+import basicparser.programflow.Construct;
 import basicparser.programflow.Goto;
 import basicparser.programflow.If;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
+	private HashMap<Integer, LinkedList<Goto>> gotoTargets;
+	private int currentLabel;
 
-	public BasicVisitor(ProgramGraph programGraph) {
+	public BasicVisitor(ProgramGraph programGraph, HashMap<Integer, LinkedList<Goto>> gotoTargets) {
+		this.gotoTargets = gotoTargets;
 		containerStack.push(programGraph);
 	}
 
@@ -32,6 +39,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTparseCommand node, Object data) {
+		currentLabel = ((ASTLineNumber) node.children[0]).lineNumber;
 		return null;
 	}
 
@@ -294,6 +302,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTendStatement node, Object data) {
+		pushOnTop(new End());
 		return null;
 	}
 
@@ -310,7 +319,13 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTgotoStatement node, Object data) {
-		top().push(new Goto());
+		Goto go = new Goto();
+		int line = ((ASTLineNumber) node.children[0]).lineNumber;
+		if(!gotoTargets.containsKey(line)) {
+			gotoTargets.put(line, new LinkedList<Goto>());
+		}
+		gotoTargets.get(line).add(go);
+		pushOnTop(go);
 		return null;
 	}
 
@@ -319,9 +334,9 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTIf node, Object data) {
-		ASTExpression condition = (ASTExpression)node.children[0];
+		ASTExpression condition = (ASTExpression) node.children[0];
 		If ifStatement = new If(condition);
-		top().push(ifStatement);
+		pushOnTop(ifStatement);
 		containerStack.push(ifStatement);
 		return null;
 	}
@@ -346,7 +361,7 @@ public class BasicVisitor implements BasicParserVisitor {
 			assignment.setNature(Assignment.Nature.Variable);
 			assignment.setName(getName((ASTName) variable.jjtGetChild(0)));
 			assignment.setType(getNameType((ASTName) variable.jjtGetChild(0)));
-			assignment.setExpression((ASTExpression)node.children[1]);
+			assignment.setExpression((ASTExpression) node.children[1]);
 		}
 		else if(variable instanceof ASTArray) {
 			//todo : arrays, positions need to be introduced to assignment class for array assignments
@@ -359,7 +374,7 @@ public class BasicVisitor implements BasicParserVisitor {
 			throw new UnknownChildException(variable);
 		}
 		assignment.digest();
-		top().push(assignment);
+		pushOnTop(assignment);
 		return null;
 	}
 
@@ -444,13 +459,13 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTforLoopStatement node, Object data) {
-		String var = getName((ASTName)node.children[0].jjtGetChild(0).jjtGetChild(0));
-		ASTExpression initial = (ASTExpression)node.children[1];
-		ASTExpression boundary = (ASTExpression)node.children[2];
-		ASTExpression step = node.children.length > 3 ? (ASTExpression)node.children[3] : null;
+		String var = getName((ASTName) node.children[0].jjtGetChild(0).jjtGetChild(0));
+		ASTExpression initial = (ASTExpression) node.children[1];
+		ASTExpression boundary = (ASTExpression) node.children[2];
+		ASTExpression step = node.children.length > 3 ? (ASTExpression) node.children[3] : null;
 
 		Loop loop = new Loop(initial, boundary, step, var);
-		top().push(loop);
+		pushOnTop(loop);
 		containerStack.push(loop);
 		return null;
 	}
@@ -472,66 +487,8 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
-
-
-
-	/*
-
-	   public Object visit(ASTPrimaryPrefix node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTPrimaryExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-
-	   public Object visit(ASTExponentialExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-	   }
-
-	   public Object visit(ASTMultiplicativeExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTAdditiveExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTRelationalExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTComparisonExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTLogicalAndExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-   }
-
-	   public Object visit(ASTLogicalOrExpression node, Object data) {
-		   node.childrenAccept(this,data);
-	   return null;
-	   }*/
-	
-	
-
-		private ConstructContainer top() {
-			return containerStack.peek();
-		}
-
-		@Override
-		public Object visit(ASTendIf node, Object data) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	private void pushOnTop(Construct construct) {
+		construct.setLabel(currentLabel);
+		containerStack.peek().push(construct);
+	}
 }

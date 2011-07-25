@@ -36,6 +36,10 @@ public class Loop extends Construct implements ConstructContainer {
 		this.variable = variable;
 	}
 
+	public Construct getFirst() {
+		return first;
+	}
+
 	public String translate() {
 		String result =
 				"for(" + variable + ".assign(" + ExpressionTranslator.instance().translate(initialValue) + "); " +

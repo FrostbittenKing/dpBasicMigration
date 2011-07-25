@@ -13,7 +13,7 @@ public class VariableTable {
 	private LinkedList<String> numbers = new LinkedList<String>();
 	private HashMap<String, LinkedList<Integer>> stringArrays = new HashMap<String, LinkedList<Integer>>();
 	private HashMap<String, LinkedList<Integer>> numberArrays = new HashMap<String, LinkedList<Integer>>();
-	
+
 	public boolean contains(String name) {
 		return strings.contains(name) || numbers.contains(name) || stringArrays.containsKey(name) || numberArrays.containsKey(name);
 	}
@@ -37,39 +37,39 @@ public class VariableTable {
 	public String translate() {
 		String result = "";
 		for(String string : strings) {
-			result += "String " + string + " = \"\";\r\n";
+			result += "static String " + string + " = \"\";\r\n";
 		}
 		for(String number : numbers) {
-			result += "MultiNumber " + number + " = new MultiNumber();\r\n";
+			result += "static MultiNumber " + number + " = new MultiNumber();\r\n";
 		}
 
 		for(Map.Entry<String, LinkedList<Integer>> strArray : stringArrays.entrySet()) {
-			result += "String";
+			result += "static String";
 			for(int i = 0; i < strArray.getValue().size(); i++) {
 				result += "[]";
 			} //number of dimensions
-			
+
 			result += " " + strArray.getKey() + " = {"; //variable name + = + opening brace
-						
+
 			result += instantiateArray(strArray.getValue(), 1, NameType.String);
 			result += "};\r\n";
 		}
-		
+
 		for(Map.Entry<String, LinkedList<Integer>> numArray : numberArrays.entrySet()) {
-			result += "MultiNumber";
+			result += "static MultiNumber";
 			for(int i = 0; i < numArray.getValue().size(); i++) {
 				result += "[]";
 			} //number of dimensions
-			
+
 			result += " " + numArray.getKey() + " = {"; //variable name + = + opening brace
-						
+
 			result += instantiateArray(numArray.getValue(), 1, NameType.Number);
 			result += "};\r\n";
 		}
 
 		return result;
 	}
-	
+
 	private String instantiateArray(LinkedList<Integer> dimensions, int index, NameType type) {
 		String returnString = "";
 		if(index == dimensions.size()) {
@@ -85,7 +85,7 @@ public class VariableTable {
 			}
 			return returnString.substring(0, returnString.length()-1);
 		}
-		
+
 		for(int i = 0; i < dimensions.get(index-1); i++) {
 			returnString += "{" + instantiateArray(dimensions, index+1, type) + "},";
 		}

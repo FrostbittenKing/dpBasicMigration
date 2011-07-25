@@ -261,7 +261,7 @@ void Expression() #void :
 {
 }
 {
-	(LogicalOrExpression()) #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral)) 
+	(LogicalOrExpression()) #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral))
 }
 
 void LogicalOrExpression() #void :
@@ -292,7 +292,7 @@ void RelationalExpression() #void :
 
 
 void AdditiveExpression() #void :
-{    
+{
      Token t;
 }
 {
