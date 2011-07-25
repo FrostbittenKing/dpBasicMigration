@@ -58,6 +58,32 @@ public class BasicEmu {
 	public String chr(MultiNumber character){
 		return new String(Character.toChars(character.getIntegerValue()));
 	}
+	
+	public MultiNumber strToNum(String input){
+		MultiNumber returnValue = null;
+		try {
+			returnValue = new MultiNumber(Double.parseDouble(input));
+		}
+		catch (Exception e){
+			returnValue = new MultiNumber(0.0);
+		}
+		return returnValue;
+	}
+	
+	public String spc(MultiNumber num){
+		String returnString = "";
+		for (int i = 0; i < num.getIntegerValue(); i++){
+			returnString += " ";
+		}
+		return returnString;
+	}
+	
+	public MultiNumber asc(String string){
+		if (string == null || string.equals("")){
+			throw new RuntimeException("Tried calling asc with empty argument");
+		}
+		return new MultiNumber(Character.getNumericValue(string.charAt(0)));
+	}
 
 	public static BasicEmu instance() {
 		if(instance == null) {

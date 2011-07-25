@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import javax.swing.text.html.HTMLDocument.Iterator;
 import javax.swing.text.rtf.RTFEditorKit;
 
+import basicparser.programflow.MultiNumber;
+
 public class MultiNumber {
 	private Integer ivalue;
 	private Double dvalue;
@@ -33,6 +35,13 @@ public class MultiNumber {
 			this.ivalue = 0;
 		}
 		isDouble = false;
+	}
+	
+	public MultiNumber(MultiNumber num){
+		if (num.isDouble)
+			this.dvalue = num.getDoubleValue();
+		else
+			this.ivalue = num.getIntegerValue();
 	}
 
 	public boolean IsDouble() {
@@ -137,6 +146,25 @@ public class MultiNumber {
 			}
 		}
 	}
+	
+	public static MultiNumber sgn(MultiNumber a){
+		if (a.isDouble){
+			if (a.getDoubleValue() > 0)
+				return new MultiNumber(1.00);
+			else if (a.getDoubleValue() < 0)
+				return new MultiNumber(-1.00);
+			else
+				return new MultiNumber(0.00);
+		}
+		else{
+			if (a.getIntegerValue() > 0)
+				return new MultiNumber(1);
+			else if (a.getIntegerValue() < 0)
+				return new MultiNumber(-1);
+			else
+				return new MultiNumber(0);
+		}
+	}
 
 	public static MultiNumber exp(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
@@ -156,8 +184,6 @@ public class MultiNumber {
 			}
 		}
 	}
-
-
 
 	public static MultiNumber ge(MultiNumber a, MultiNumber b) {
 		if (!a.isDouble) {
@@ -350,5 +376,18 @@ public class MultiNumber {
 			return new MultiNumber((Integer)returnVal);
 		}
 	}
+
+	@Override
+	public String toString() {
+		if (isDouble){
+			return dvalue.toString();
+		}
+		else {
+			return ivalue.toString();
+		}
+	}
+	
+	
+	
 
 }
