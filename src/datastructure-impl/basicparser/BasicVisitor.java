@@ -8,16 +8,20 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import basicparser.*;
+import basicparser.ASTName;
 import basicparser.programflow.*;
+import basicparser.programflow.Assignment;
+import basicparser.programflow.Gosub;
 
 public class BasicVisitor implements BasicParserVisitor {
-	private LinkedList stack = new LinkedList();
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
 	private HashMap<Integer, LinkedList<Goto>> gotoTargets;
+	private LinkedList<Integer> gosubTargets;
 	private int currentLabel;
 
-	public BasicVisitor(ProgramGraph programGraph, HashMap<Integer, LinkedList<Goto>> gotoTargets) {
+	public BasicVisitor(ProgramGraph programGraph, HashMap<Integer, LinkedList<Goto>> gotoTargets, LinkedList<Integer> gosubTargets) {
 		this.gotoTargets = gotoTargets;
+		this.gosubTargets = gosubTargets;
 		containerStack.push(programGraph);
 	}
 
@@ -302,10 +306,17 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTgosubStatement node, Object data) {
+		int label = ((ASTLineNumber) node.jjtGetChild(0)).lineNumber;
+		Gosub gosub = new Gosub(label);
+		pushOnTop(gosub);
+		if(!gosubTargets.contains(label)) {
+			gosubTargets.add(label);
+		}
 		return null;
 	}
 
 	public Object visit(ASTreturnStatement node, Object data) {
+		pushOnTop(new Return());
 		return null;
 	}
 
@@ -314,12 +325,12 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTgotoStatement node, Object data) {
+		int label = ((ASTLineNumber) node.jjtGetChild(0)).lineNumber;
 		Goto go = new Goto();
-		int line = ((ASTLineNumber) node.children[0]).lineNumber;
-		if(!gotoTargets.containsKey(line)) {
-			gotoTargets.put(line, new LinkedList<Goto>());
+		if(!gotoTargets.containsKey(label)) {
+			gotoTargets.put(label, new LinkedList<Goto>());
 		}
-		gotoTargets.get(line).add(go);
+		gotoTargets.get(label).add(go);
 		pushOnTop(go);
 		return null;
 	}
@@ -462,9 +473,18 @@ public class BasicVisitor implements BasicParserVisitor {
 		Loop loop = new Loop(initial, boundary, step, var);
 		pushOnTop(loop);
 		containerStack.push(loop);
+
+		if(VariableTable.instance().contains(var)) {
+			if(!VariableTable.instance().getNumbers().contains(var)) {
+				throw new RuntimeException("Variable name not unique to number variables : " + var);
+			}
+		}
+		else {
+			VariableTable.instance().getNumbers().add(var);
+		}
 		return null;
 	}
-	
+
 
 	public Object visit(ASTnextStatement node, Object data) {
 		containerStack.pop();
@@ -472,13 +492,13 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTprintStatement node, Object data) {
-	
-		ASTExpression [] expressions = new ASTExpression[node.jjtGetChild(0).jjtGetNumChildren()];
 
-		for (int i = 0; i < expressions.length; i++) {
-			expressions[i] = (ASTExpression)node.jjtGetChild(0).jjtGetChild(i);
+		ASTExpression[] expressions = new ASTExpression[node.jjtGetChild(0).jjtGetNumChildren()];
+
+		for(int i = 0; i < expressions.length; i++) {
+			expressions[i] = (ASTExpression) node.jjtGetChild(0).jjtGetChild(i);
 		}
-		
+
 		Print printStatement = new Print(expressions);
 		pushOnTop(printStatement);
 		return null;

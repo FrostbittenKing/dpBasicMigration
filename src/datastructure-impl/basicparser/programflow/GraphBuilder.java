@@ -2,7 +2,12 @@ package basicparser.programflow;
 
 import basicparser.*;
 import basicparser.programflow.Assignment;
+import basicparser.programflow.Construct;
+import basicparser.programflow.Return;
 
+import java.lang.*;
+import java.lang.Character;
+import java.lang.Integer;
 import java.lang.System;
 import java.lang.Thread;
 import java.lang.Throwable;
@@ -14,11 +19,13 @@ public class GraphBuilder {
 	public ProgramGraph build(SimpleNode root) {
 		ProgramGraph graph = new ProgramGraph();
 		HashMap<Integer, LinkedList<Goto>> gotoTargets = new HashMap<Integer, LinkedList<Goto>>();
+		LinkedList<Integer> gosubTargets = new LinkedList<Integer>();
 
-		BasicVisitor v = new BasicVisitor(graph, gotoTargets);
+		BasicVisitor v = new BasicVisitor(graph, gotoTargets, gosubTargets);
 		build(root, v);
 		graph.finalize();
 		initializeGotos(graph, gotoTargets);
+		initializeSubs(graph, gosubTargets);
 
 		return graph;
 	}
@@ -52,14 +59,28 @@ public class GraphBuilder {
 			if(!graph.getHeads().contains(target)) {
 				graph.getHeads().add(target);
 			}
-			//System.out.println("*** DIrecting " + gotoEntry.getKey() + " to " + target + "(" + target.getLabel() + ")");
-//			if(target instanceof Assignment) {
-//				Assignment x = (Assignment) target;
-//				System.out.println("x.getName() = " + x.getName());
-//			}
 			for(Goto aGoto : gotoEntry.getValue()) {
 				aGoto.setNext(target);
 			}
+		}
+	}
+
+	/**
+	 * builds subs from gosub targets until return statements
+	 * @param graph
+	 * @param gosubTargets
+	 */
+	private void initializeSubs(ProgramGraph graph, LinkedList<Integer> gosubTargets) {
+		//first gather all the targets of the gosubs
+		LinkedList<Construct> targetConstructs = new LinkedList<Construct>();
+		for(Integer label : gosubTargets) {
+			targetConstructs.add(graph.getConstructByLabel(label));
+		}
+		//build the subs
+		for(Construct targetConstruct : targetConstructs) {
+			Sub sub = new Sub();
+			sub.push(targetConstruct);
+			graph.getSubs().add(sub);
 		}
 	}
 }

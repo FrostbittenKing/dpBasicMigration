@@ -43,8 +43,8 @@ public class Loop extends Construct implements ConstructContainer {
 	public String translate() {
 		String result =
 				"for(" + variable + ".assign(" + ExpressionTranslator.instance().translate(initialValue) + "); " +
-				variable + ".lt(" + ExpressionTranslator.instance().translate(upperBoundary) + "); " +
-				variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ") {\r\n";
+				"MultiNumber.lt( " + variable + "," + ExpressionTranslator.instance().translate(upperBoundary) + ").isTrue(); " +
+				variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ")) {\r\n";
 		for(Construct c = first; c != null; c = c.getNext()) {
 			result += c.translate();
 			result += "\r\n";

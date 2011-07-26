@@ -6,6 +6,7 @@ import basicparser.programflow.End;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.Character;
 import java.lang.Object;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 public class ProgramGraph implements ConstructContainer {
 	private Construct first;
 	private LinkedList<Construct> heads = new LinkedList<Construct>();
+	private LinkedList<Sub> subs = new LinkedList<Sub>();
 
 	public void push(Construct construct) {
 		if(first == null) {
@@ -34,7 +36,7 @@ public class ProgramGraph implements ConstructContainer {
 			return;
 		}
 		Construct c;
-		for(c = first; c.getNext() != null; c = c.getNext());
+		for(c = first; c.getNext() != null; c = c.getNext()) ;
 		c.setNext(new End());
 	}
 
@@ -72,22 +74,49 @@ public class ProgramGraph implements ConstructContainer {
 		return heads;
 	}
 
+	public LinkedList<Sub> getSubs() {
+		return subs;
+	}
+
 	public void translate(OutputStream out) throws IOException {
 		String header =
-				"public class Main {\r\n";
-		String footerMain =
+				"public class Main {\n" +
+				"\tprivate static Main instance;\n" +
+				"\t\n" +
+				"\tpublic static void main(String[] args) {\n" +
+				"\t\twhile(true) {\n" +
+				"\t\t\ttry {\n" +
+				"\t\t\t\tinstance().getClass().getDeclaredMethod(instance().nextCallMethodName).invoke(instance());\n" +
+				"\t\t\t}\n" +
+				"\t\t\tcatch(Exception e) {\n" +
+				"\t\t\t\tthrow new RuntimeException(\"Method invocation error \" + e);\n" +
+				"\t\t\t}\n" +
+				"\t\t}\n" +
+				"\t}\n" +
+				"\n" +
+				"\tprivate static Main instance() {\n" +
+				"\t\tif(instance == null) {\n" +
+				"\t\t\tinstance = new Main();\n" +
+				"\t\t}\n" +
+				"\t\treturn instance;\n" +
+				"\t}\r\n";
+		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGotoMethodFromLabel(heads.getFirst().getLabel())) + "\r\n";
+		String footer =
 				"   }\r\n";
-		String footerClass =
-				"}\r\n";
+
 		out.write(header.getBytes());
-		Iterator<Construct> headIterator = heads.iterator();
-		translateMethod("public static void main(String[] args)", headIterator.next(), out);
-		while(headIterator.hasNext()) {
-			Construct head = headIterator.next();
-			translateMethod("private static void " + getMethodFromLabel(head.getLabel()) + "()", head, out);
-		}
 		out.write(VariableTable.instance().translate().getBytes());
-		out.write(footerClass.getBytes());
+
+		Iterator<Construct> headIterator = heads.iterator();
+		System.out.println("Heads total " + heads.size());
+		for(Construct head : heads) {
+			translateMethod("private void " + getGotoMethodFromLabel(head.getLabel()) + "()", head, out);
+		}
+		for(Sub sub : subs) {
+			out.write(sub.translate().getBytes());
+		}
+		out.write((nextMethodCallNameDecl + "\r\n").getBytes());
+		out.write(footer.getBytes());
 	}
 
 	private void translateMethod(String header, Construct head, OutputStream out) throws IOException {
@@ -101,7 +130,15 @@ public class ProgramGraph implements ConstructContainer {
 		out.write("}\r\n".getBytes());
 	}
 
-	public static String getMethodFromLabel(int label) {
+	public static String makeNextCallMethodNameAssignment(String method) {
+		return "nextCallMethodName = \"" + method + "\";";
+	}
+
+	public static String getGosubMethodFromLabel(int label) {
+		return "sub_" + label;
+	}
+
+	public static String getGotoMethodFromLabel(int label) {
 		return "m_" + label;
 	}
 }

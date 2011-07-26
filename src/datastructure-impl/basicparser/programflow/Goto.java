@@ -2,6 +2,8 @@ package basicparser.programflow;
 
 public class Goto extends Construct {
 	public String translate() {
-		return ProgramGraph.getMethodFromLabel(this.getNext().getLabel()) + "();";
+		String result = ProgramGraph.makeNextCallMethodNameAssignment(ProgramGraph.getGotoMethodFromLabel(this.getNext().getLabel())) + "\r\n";
+		result += "return;";
+		return result;
 	}
 }
