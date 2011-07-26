@@ -8,12 +8,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import basicparser.*;
-import basicparser.ASTLineNumber;
 import basicparser.programflow.*;
-import basicparser.programflow.Assignment;
-import basicparser.programflow.Construct;
-import basicparser.programflow.Goto;
-import basicparser.programflow.If;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private LinkedList stack = new LinkedList();
@@ -469,6 +464,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		containerStack.push(loop);
 		return null;
 	}
+	
 
 	public Object visit(ASTnextStatement node, Object data) {
 		containerStack.pop();
@@ -476,6 +472,15 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTprintStatement node, Object data) {
+	
+		ASTExpression [] expressions = new ASTExpression[node.jjtGetChild(0).jjtGetNumChildren()];
+
+		for (int i = 0; i < expressions.length; i++) {
+			expressions[i] = (ASTExpression)node.jjtGetChild(0).jjtGetChild(i);
+		}
+		
+		Print printStatement = new Print(expressions);
+		pushOnTop(printStatement);
 		return null;
 	}
 
