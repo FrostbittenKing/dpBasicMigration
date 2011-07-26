@@ -177,8 +177,7 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTStringIdentifier node, Object data) {
-
-		return null;
+		return node.value;
 	}
 
 	@Override
@@ -198,8 +197,7 @@ public class ExpressionVisitor implements BasicParserVisitor {
 
 	@Override
 	public Object visit(ASTStringLiteral node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		return node.stringValue;
 	}
 
 	@Override

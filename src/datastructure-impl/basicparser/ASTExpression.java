@@ -10,7 +10,6 @@ public class ASTExpression extends SimpleNode {
 		super(p, id);
 	}
 
-
 	/**
 	 * Accept the visitor. *
 	 */
