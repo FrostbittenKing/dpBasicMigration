@@ -3,6 +3,7 @@ package basicparser.programflow;
 import basicparser.programflow.Assignment;
 import basicparser.programflow.Construct;
 import basicparser.programflow.End;
+import basicparser.programflow.Gosub;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,7 +15,10 @@ import java.util.LinkedList;
 public class ProgramGraph implements ConstructContainer {
 	private Construct first;
 	private LinkedList<Construct> heads = new LinkedList<Construct>();
+	private LinkedList<Construct> returnHeads = new LinkedList<Construct>();
 	private LinkedList<Sub> subs = new LinkedList<Sub>();
+	public static final String RETURN_CALL_METHOD_NAME_STACK = "returnCallMethodNameStack";
+	public static final String RETURN_METHOD_PREFIX = "return_";
 
 	public void push(Construct construct) {
 		if(first == null) {
@@ -74,12 +78,19 @@ public class ProgramGraph implements ConstructContainer {
 		return heads;
 	}
 
-	public LinkedList<Sub> getSubs() {
-		return subs;
+	/**
+	 * heads are constructs which have a return pointing to them and thus make up the start of a new method
+	 *
+	 * @return return-resulting function head constructs (first construct in function)
+	 */
+	public LinkedList<Construct> getReturnHeads() {
+		return returnHeads;
 	}
 
 	public void translate(OutputStream out) throws IOException {
 		String header =
+				"import java.util.Stack;\n" +
+				"\n" +
 				"public class Main {\n" +
 				"\tprivate static Main instance;\n" +
 				"\t\n" +
@@ -100,7 +111,8 @@ public class ProgramGraph implements ConstructContainer {
 				"\t\t}\n" +
 				"\t\treturn instance;\n" +
 				"\t}\r\n";
-		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGotoMethodFromLabel(heads.getFirst().getLabel())) + "\r\n";
+		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGoMethodFromLabel(heads.getFirst().getLabel())) + "\r\n";
+		String returnCallMethodNameStackDecl = "private Stack<String> returnCallMethodNameStack = new Stack<String>();";
 		String footer =
 				"   }\r\n";
 
@@ -108,14 +120,14 @@ public class ProgramGraph implements ConstructContainer {
 		out.write(VariableTable.instance().translate().getBytes());
 
 		Iterator<Construct> headIterator = heads.iterator();
-		System.out.println("Heads total " + heads.size());
 		for(Construct head : heads) {
-			translateMethod("private void " + getGotoMethodFromLabel(head.getLabel()) + "()", head, out);
+			translateMethod("private void " + getGoMethodFromLabel(head.getLabel()) + "()", head, out);
 		}
-		for(Sub sub : subs) {
-			out.write(sub.translate().getBytes());
+		for(Construct head : returnHeads) {
+			translateMethod("private void " + getReturnMethodFromLabel(head.getLabel()) + "()", head, out);
 		}
 		out.write((nextMethodCallNameDecl + "\r\n").getBytes());
+		out.write((returnCallMethodNameStackDecl + "\r\n").getBytes());
 		out.write(footer.getBytes());
 	}
 
@@ -123,7 +135,7 @@ public class ProgramGraph implements ConstructContainer {
 		out.write((header + "{\r\n").getBytes());
 		for(Construct c = head; c != null; c = c.getNext()) {
 			out.write((c.translate() + "\r\n").getBytes());
-			if(c instanceof Goto) {
+			if(c instanceof Goto || c instanceof Gosub) {
 				break;
 			}
 		}
@@ -134,11 +146,11 @@ public class ProgramGraph implements ConstructContainer {
 		return "nextCallMethodName = \"" + method + "\";";
 	}
 
-	public static String getGosubMethodFromLabel(int label) {
-		return "sub_" + label;
+	public static String getReturnMethodFromLabel(int label) {
+		return "return_" + label;
 	}
 
-	public static String getGotoMethodFromLabel(int label) {
-		return "m_" + label;
+	public static String getGoMethodFromLabel(int label) {
+		return "go_" + label;
 	}
 }

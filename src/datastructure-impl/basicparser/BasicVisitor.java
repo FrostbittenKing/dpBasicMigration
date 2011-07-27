@@ -11,17 +11,19 @@ import basicparser.*;
 import basicparser.ASTName;
 import basicparser.programflow.*;
 import basicparser.programflow.Assignment;
+import basicparser.programflow.Construct;
 import basicparser.programflow.Gosub;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
-	private HashMap<Integer, LinkedList<Goto>> gotoTargets;
-	private LinkedList<Integer> gosubTargets;
+	private HashMap<Integer, LinkedList<Construct>> goTargets;
+	private LinkedList<Integer> returnTargets;
 	private int currentLabel;
+	private Gosub openGosub = null;
 
-	public BasicVisitor(ProgramGraph programGraph, HashMap<Integer, LinkedList<Goto>> gotoTargets, LinkedList<Integer> gosubTargets) {
-		this.gotoTargets = gotoTargets;
-		this.gosubTargets = gosubTargets;
+	public BasicVisitor(ProgramGraph programGraph, HashMap<Integer, LinkedList<Construct>> goTargets, LinkedList<Integer> returnTargets) {
+		this.goTargets = goTargets;
+		this.returnTargets = returnTargets;
 		containerStack.push(programGraph);
 	}
 
@@ -39,6 +41,11 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	public Object visit(ASTparseCommand node, Object data) {
 		currentLabel = ((ASTLineNumber) node.children[0]).lineNumber;
+		if(openGosub != null) {
+			returnTargets.push(currentLabel);
+			openGosub.setReturnTarget(currentLabel);
+			openGosub = null;
+		}
 		return null;
 	}
 
@@ -305,13 +312,19 @@ public class BasicVisitor implements BasicParserVisitor {
 		return null;
 	}
 
+	private void goTargetPrepare(int label) {
+		if(!goTargets.containsKey(label)) {
+			goTargets.put(label, new LinkedList<Construct>());
+		}
+	}
+
 	public Object visit(ASTgosubStatement node, Object data) {
 		int label = ((ASTLineNumber) node.jjtGetChild(0)).lineNumber;
-		Gosub gosub = new Gosub(label);
-		pushOnTop(gosub);
-		if(!gosubTargets.contains(label)) {
-			gosubTargets.add(label);
-		}
+		Gosub go = new Gosub();
+		goTargetPrepare(label);
+		goTargets.get(label).add(go);
+		pushOnTop(go);
+		openGosub = go;
 		return null;
 	}
 
@@ -327,10 +340,8 @@ public class BasicVisitor implements BasicParserVisitor {
 	public Object visit(ASTgotoStatement node, Object data) {
 		int label = ((ASTLineNumber) node.jjtGetChild(0)).lineNumber;
 		Goto go = new Goto();
-		if(!gotoTargets.containsKey(label)) {
-			gotoTargets.put(label, new LinkedList<Goto>());
-		}
-		gotoTargets.get(label).add(go);
+		goTargetPrepare(label);
+		goTargets.get(label).add(go);
 		pushOnTop(go);
 		return null;
 	}

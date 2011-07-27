@@ -18,14 +18,14 @@ import java.util.Map;
 public class GraphBuilder {
 	public ProgramGraph build(SimpleNode root) {
 		ProgramGraph graph = new ProgramGraph();
-		HashMap<Integer, LinkedList<Goto>> gotoTargets = new HashMap<Integer, LinkedList<Goto>>();
-		LinkedList<Integer> gosubTargets = new LinkedList<Integer>();
+		HashMap<Integer, LinkedList<Construct>> goTargets = new HashMap<Integer, LinkedList<Construct>>();
+		LinkedList<Integer> returnTargets = new LinkedList<Integer>();
 
-		BasicVisitor v = new BasicVisitor(graph, gotoTargets, gosubTargets);
+		BasicVisitor v = new BasicVisitor(graph, goTargets, returnTargets);
 		build(root, v);
 		graph.finalize();
-		initializeGotos(graph, gotoTargets);
-		initializeSubs(graph, gosubTargets);
+		initializeReturns(graph, returnTargets);
+		initializeGos(graph, goTargets);
 
 		return graph;
 	}
@@ -43,10 +43,10 @@ public class GraphBuilder {
 	 * @param graph
 	 * @param gotoTargets
 	 */
-	private void initializeGotos(ProgramGraph graph, HashMap<Integer, LinkedList<Goto>> gotoTargets) {
+	private void initializeGos(ProgramGraph graph, HashMap<Integer, LinkedList<Construct>> goTargets) {
 		//first gather all the targets of the gotos
 		HashMap<Integer, Construct> targetConstructs = new HashMap<Integer, Construct>();
-		for(Integer label : gotoTargets.keySet()) {
+		for(Integer label : goTargets.keySet()) {
 			if(!targetConstructs.containsKey(label)) {
 				targetConstructs.put(label, graph.getConstructByLabel(label));
 			}
@@ -54,33 +54,26 @@ public class GraphBuilder {
 		//the first construct is always a head - the head construct of the main method
 		graph.getHeads().add(graph.getFirst());
 		//than change the linking of the graph so the gotos have the according next statements
-		for(Map.Entry<Integer, LinkedList<Goto>> gotoEntry : gotoTargets.entrySet()) {
-			Construct target = targetConstructs.get(gotoEntry.getKey());
+		for(Map.Entry<Integer, LinkedList<Construct>> goEntry : goTargets.entrySet()) {
+			Construct target = targetConstructs.get(goEntry.getKey());
 			if(!graph.getHeads().contains(target)) {
 				graph.getHeads().add(target);
 			}
-			for(Goto aGoto : gotoEntry.getValue()) {
-				aGoto.setNext(target);
+			for(Construct go : goEntry.getValue()) {
+				go.setNext(target);
 			}
 		}
 	}
 
 	/**
-	 * builds subs from gosub targets until return statements
+	 * builds return methos starting with statements immediately after a goto (here called return targets)
 	 * @param graph
-	 * @param gosubTargets
+	 * @param returnTargets
 	 */
-	private void initializeSubs(ProgramGraph graph, LinkedList<Integer> gosubTargets) {
-		//first gather all the targets of the gosubs
-		LinkedList<Construct> targetConstructs = new LinkedList<Construct>();
-		for(Integer label : gosubTargets) {
-			targetConstructs.add(graph.getConstructByLabel(label));
-		}
-		//build the subs
-		for(Construct targetConstruct : targetConstructs) {
-			Sub sub = new Sub();
-			sub.push(targetConstruct);
-			graph.getSubs().add(sub);
+	private void initializeReturns(ProgramGraph graph, LinkedList<Integer> returnTargets) {
+		//gather all the targets of the returns
+		for(Integer label : returnTargets) {
+			graph.getReturnHeads().add(graph.getConstructByLabel(label));
 		}
 	}
 }
