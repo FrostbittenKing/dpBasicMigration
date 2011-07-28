@@ -12,7 +12,9 @@ import basicparser.ASTName;
 import basicparser.programflow.*;
 import basicparser.programflow.Assignment;
 import basicparser.programflow.Construct;
+import basicparser.programflow.ConstructContainer;
 import basicparser.programflow.Gosub;
+import basicparser.programflow.Loop;
 
 public class BasicVisitor implements BasicParserVisitor {
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
@@ -525,6 +527,10 @@ public class BasicVisitor implements BasicParserVisitor {
 
 	private void pushOnTop(Construct construct) {
 		construct.setLabel(currentLabel);
-		containerStack.peek().push(construct);
+		ConstructContainer container = containerStack.peek();
+		if(container instanceof Loop) {
+			construct.setTop(container);
+		}
+		container.push(construct);
 	}
 }

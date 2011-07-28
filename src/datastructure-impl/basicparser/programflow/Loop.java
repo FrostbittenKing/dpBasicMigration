@@ -2,6 +2,7 @@ package basicparser.programflow;
 
 import basicparser.ASTExpression;
 
+import java.lang.RuntimeException;
 import java.lang.String;
 
 public class Loop extends Construct implements ConstructContainer {
@@ -40,9 +41,43 @@ public class Loop extends Construct implements ConstructContainer {
 		return first;
 	}
 
+	public String translateBy(Construct child) {
+		boolean foundChild = false;
+		for(Construct c = first; c != null; c = c.getNext()) {
+			if(c.equals(child)) {
+				foundChild = true;
+				break;
+			}
+		}
+		if(!foundChild) {
+			throw new RuntimeException("Called translateBy with an invalid child " + child.getLabel() + " " + child);
+		}
+
+		String result = "";
+		//first translate starting from the child till the end
+		for(Construct c = child; c != null; c = c.getNext()) {
+			result += c.translate();
+			result += "\r\n";
+		}
+		//then increment the counter
+		result += variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ");\r\n";
+		//then translate the loop in a normal way but without the initial assignment
+		result += translate(true);
+
+		return result;
+	}
+
 	public String translate() {
-		String result =
-				"for(" + variable + ".assign(" + ExpressionTranslator.instance().translate(initialValue) + "); " +
+		return translate(false);
+	}
+
+	private String translate(boolean skipAssignment) {
+		String result = "for(";
+		result +=
+				skipAssignment
+				? "; "
+				: variable + ".assign(" + ExpressionTranslator.instance().translate(initialValue) + "); ";
+		result +=
 				"MultiNumber.lt( " + variable + "," + ExpressionTranslator.instance().translate(upperBoundary) + ").isTrue(); " +
 				variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ")) {\r\n";
 		for(Construct c = first; c != null; c = c.getNext()) {

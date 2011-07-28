@@ -30,4 +30,8 @@ public class If extends Construct implements ConstructContainer {
 		result += "}";
 		return result;
 	}
+
+	public String translateBy(Construct child) {
+		return translate();
+	}
 }

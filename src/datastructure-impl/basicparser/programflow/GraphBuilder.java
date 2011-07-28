@@ -51,8 +51,6 @@ public class GraphBuilder {
 				targetConstructs.put(label, graph.getConstructByLabel(label));
 			}
 		}
-		//the first construct is always a head - the head construct of the main method
-		graph.getHeads().add(graph.getFirst());
 		//than change the linking of the graph so the gotos have the according next statements
 		for(Map.Entry<Integer, LinkedList<Construct>> goEntry : goTargets.entrySet()) {
 			Construct target = targetConstructs.get(goEntry.getKey());

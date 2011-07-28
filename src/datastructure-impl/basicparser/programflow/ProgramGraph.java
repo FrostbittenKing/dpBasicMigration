@@ -1,14 +1,7 @@
 package basicparser.programflow;
 
-import basicparser.programflow.Assignment;
-import basicparser.programflow.Construct;
-import basicparser.programflow.End;
-import basicparser.programflow.Gosub;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.Character;
-import java.lang.Object;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -16,7 +9,6 @@ public class ProgramGraph implements ConstructContainer {
 	private Construct first;
 	private LinkedList<Construct> heads = new LinkedList<Construct>();
 	private LinkedList<Construct> returnHeads = new LinkedList<Construct>();
-	private LinkedList<Sub> subs = new LinkedList<Sub>();
 	public static final String RETURN_CALL_METHOD_NAME_STACK = "returnCallMethodNameStack";
 	public static final String RETURN_METHOD_PREFIX = "return_";
 
@@ -88,6 +80,15 @@ public class ProgramGraph implements ConstructContainer {
 	}
 
 	public void translate(OutputStream out) throws IOException {
+		out.write(translateBy(first).getBytes());
+	}
+
+	public String translateBy(Construct child) {
+		if(heads.contains(child)) {
+			heads.remove(child);
+		}
+		heads.addFirst(child);
+
 		String header =
 				"import java.util.Stack;\n" +
 				"\n" +
@@ -116,30 +117,42 @@ public class ProgramGraph implements ConstructContainer {
 		String footer =
 				"   }\r\n";
 
-		out.write(header.getBytes());
-		out.write(VariableTable.instance().translate().getBytes());
+		String result = "";
+
+		result += header;
+		result += VariableTable.instance().translate();
 
 		Iterator<Construct> headIterator = heads.iterator();
 		for(Construct head : heads) {
-			translateMethod("private void " + getGoMethodFromLabel(head.getLabel()) + "()", head, out);
+			result += translateMethod("private void " + getGoMethodFromLabel(head.getLabel()) + "()", head);
 		}
 		for(Construct head : returnHeads) {
-			translateMethod("private void " + getReturnMethodFromLabel(head.getLabel()) + "()", head, out);
+			result += translateMethod("private void " + getReturnMethodFromLabel(head.getLabel()) + "()", head);
 		}
-		out.write((nextMethodCallNameDecl + "\r\n").getBytes());
-		out.write((returnCallMethodNameStackDecl + "\r\n").getBytes());
-		out.write(footer.getBytes());
+		result += nextMethodCallNameDecl + "\r\n";
+		result += returnCallMethodNameStackDecl + "\r\n";
+		result += footer;
+		return result;
 	}
 
-	private void translateMethod(String header, Construct head, OutputStream out) throws IOException {
-		out.write((header + "{\r\n").getBytes());
-		for(Construct c = head; c != null; c = c.getNext()) {
-			out.write((c.translate() + "\r\n").getBytes());
-			if(c instanceof Goto || c instanceof Gosub) {
+	private String translateMethod(String header, Construct head) {
+		String result = "";
+		result += header + "{\r\n";
+		Construct next = head;
+		//if the construct we are translating is nested in a construct container we have to construct the
+		//method from the construct container starting by the child
+		if(head.hasTop()) {
+			result += head.getTop().translateBy(head);
+			next = ((Construct)head.getTop()).getNext();
+		}
+		for(Construct c = next; c != null; c = c.getNext()) {
+			result += c.translate() + "\r\n";
+			if(c instanceof Goto || c instanceof Gosub || c instanceof End) {
 				break;
 			}
 		}
-		out.write("}\r\n".getBytes());
+		result += "}\r\n";
+		return result;
 	}
 
 	public static String makeNextCallMethodNameAssignment(String method) {
