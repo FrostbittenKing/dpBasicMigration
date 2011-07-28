@@ -11,6 +11,7 @@
 25 a = b
 26 b = n
 27 next c
+90 if (F = 1) goto 25
 28 return
 30 n = 1
 32 return
