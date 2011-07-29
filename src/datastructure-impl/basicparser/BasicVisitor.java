@@ -1,6 +1,7 @@
 package basicparser;
 
 import java.lang.Integer;
+import java.lang.Math;
 import java.lang.NumberFormatException;
 import java.lang.RuntimeException;
 import java.util.HashMap;
@@ -296,7 +297,7 @@ public class BasicVisitor implements BasicParserVisitor {
 			if(currentArrayDeclaration.name instanceof ASTNumberIdentifier) {
 				ASTNumberIdentifier numberIdentifier = (ASTNumberIdentifier) currentArrayDeclaration.name;
 				LinkedList<Integer> dimensions = new LinkedList<Integer>();
-				VariableTable.instance().getNumberArrays().put(numberIdentifier.value, dimensions);
+				VariableTable.instance().getNumberArrays().put(digestName(numberIdentifier.value), dimensions);
 				for(String parameter : currentArrayDeclaration.parameters) {
 					dimensions.add(Integer.parseInt(parameter));
 				}
@@ -378,7 +379,7 @@ public class BasicVisitor implements BasicParserVisitor {
 		Assignment assignment = new Assignment();
 		if(variable instanceof ASTSimpleVariable) {
 			assignment.setNature(Assignment.Nature.Variable);
-			assignment.setName(getName((ASTName) variable.jjtGetChild(0)));
+			assignment.setName(digestName(getName((ASTName) variable.jjtGetChild(0))));
 			assignment.setType(getNameType((ASTName) variable.jjtGetChild(0)));
 			assignment.setExpression((ASTExpression) node.children[1]);
 		}
@@ -386,7 +387,7 @@ public class BasicVisitor implements BasicParserVisitor {
 			//todo : arrays, positions need to be introduced to assignment class for array assignments
 			// ie : arr[0,3] = 0; //// atm only "arr" the name and "0" the expression are stored
 			assignment.setNature(Assignment.Nature.Array);
-			String name = getName((ASTName) variable.jjtGetChild(0));
+			String name = digestName(getName((ASTName) variable.jjtGetChild(0)));
 			throw new RuntimeException("Not implemented");
 		}
 		else {
@@ -405,6 +406,11 @@ public class BasicVisitor implements BasicParserVisitor {
 			return ((ASTStringIdentifier) name.children[0]).value;
 		}
 		throw new UnknownChildException(name.children[0]);
+	}
+
+	private String digestName(String name) {
+		//only the first 2 characters are used
+		return name.substring(0, Math.min(2, name.length())).toLowerCase();
 	}
 
 	private ASTName.NameType getNameType(ASTName name) {
@@ -478,7 +484,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTforLoopStatement node, Object data) {
-		String var = getName((ASTName) node.children[0].jjtGetChild(0).jjtGetChild(0));
+		String var = digestName(getName((ASTName) node.children[0].jjtGetChild(0).jjtGetChild(0)));
 		ASTExpression initial = (ASTExpression) node.children[1];
 		ASTExpression boundary = (ASTExpression) node.children[2];
 		ASTExpression step = node.children.length > 3 ? (ASTExpression) node.children[3] : null;
