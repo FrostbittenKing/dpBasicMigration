@@ -73,6 +73,7 @@ public class BasicEmu {
 	}
 	
 	public String spc(MultiNumber spaceCount){
+		
 		String returnString = "";
 		for (int i = 0; i < spaceCount.getIntegerValue(); i++){
 			returnString += " ";
@@ -99,8 +100,9 @@ public class BasicEmu {
 		printCharCounter = 0;
 	}
 	
-	public void print(){
-		
+	public String print(String printText){
+		printCharCounter += printText.length();
+		return printText;
 	}
 	
 	

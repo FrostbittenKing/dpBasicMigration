@@ -141,21 +141,28 @@ public class BasicFunctionsTranslator {
 		String stringParameter = ExpressionTranslator.instance().translate(parameters[0]);
 		String startParameter = ExpressionTranslator.instance().translate(parameters[1]);
 		String endParameter = ExpressionTranslator.instance().translate(parameters[1]);
-		String result = "BasicEmu.instance().mid(" + stringParameter + "," + startParameter + "," + endParameter + ");";
+		String result = "BasicEmu.instance().mid(" + stringParameter + "," + startParameter + "," + endParameter + ")";
 		return result;
 	}
 	
 	public String translate(ASTRandom rnd){
 		ASTExpression [] parameters = getParameters(rnd);
 		String numParameter = ExpressionTranslator.instance().translate(parameters[0]);
-		String result = "BasicEmu.instance().rnd(" + numParameter + ");";
+		String result = "BasicEmu.instance().rnd(" + numParameter + ")";
 		return result;
 	}
 	
 	public String translate(ASTSpace spc){
 		ASTExpression [] parameters = getParameters(spc);
 		String numParameter = ExpressionTranslator.instance().translate(parameters[0]);
-		String result = "BasicEmu.instance().spc(" + numParameter + ");";
+		String result = "BasicEmu.instance().spc(" + numParameter + ")";
+		return result;
+	}
+	
+	public String translate(ASTTab tab){
+		ASTExpression [] parameters = getParameters(tab);
+		String numParameter = ExpressionTranslator.instance().translate(parameters[0]);
+		String result = "BasicEmu.instance().tab(" + numParameter + ")";
 		return result;
 	}
 

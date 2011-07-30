@@ -1,42 +1,49 @@
 package basicparser.programflow;
 
 import basicparser.ASTExpression;
-import basicparser.ASTSpace;
+import basicparser.ASTBasicFunctions;
+import basicparser.ASTprintStatement;
 import basicparser.ASTTab;
-import basicparser.emu.BasicEmu;
+import basicparser.Node;
+import basicparser.SimpleNode;
 
 public class Print extends Instruction{
-	private ASTExpression [] printExpressions;
-	
-	public Print(ASTExpression [] exp){
-		this.printExpressions = exp;
+	private ASTprintStatement printStatement;
+
+	public Print(ASTprintStatement printStatement){
+		this.printStatement = printStatement;
 	}
-	
+
 	@Override
 	public String translate(){
-		String printText = "BasicEmu.instance().startPrint();\r\n";
-		
-		for (int i = 0; i < printExpressions.length; i++){
-			if (printExpressions[i].jjtGetChild(0).jjtGetChild(0) instanceof ASTTab){
-				printText += "BasicEmu.instance().tab(" + ((ASTTab)printExpressions[i].jjtGetChild(0).jjtGetChild(0)).getParameterVomTab() + ");\r\n";
+
+		String printText = null;
+		ASTExpression[] expressions = new ASTExpression[printStatement.jjtGetChild(0).jjtGetNumChildren()];
+
+		if(expressions.length > 0) {
+			printText= "BasicEmu.instance().startPrint();\n";
+		}
+
+		for(int i = 0; i < expressions.length; i++) {
+
+			expressions[i] = (ASTExpression) printStatement.jjtGetChild(0).jjtGetChild(i);
+			if (expressions[i].jjtGetChild(0).jjtGetChild(0) instanceof ASTBasicFunctions) {
+				printText += "System.out.print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");\n";
 			}
-			else if (printExpressions[i].jjtGetChild(0).jjtGetChild(0) instanceof ASTSpace){
-				printText += "BasicEmu.instance().spc(" + ((ASTSpace)printExpressions[i].jjtGetChild(0).jjtGetChild(0)).getParameterVomSpace() + ");\r\n";
+
+			else {
+				printText += "System.out.print(BasicEmu.instance().print(" + ExpressionTranslator.instance().translate(expressions[i]) + "));\n";
 			}
-			else if //do normal print text
 		}
-		
-		
-		/*
-		if(printExpressions.length > 0) {
-			printText= ExpressionTranslator.instance().translate(printExpressions[0]);
+
+
+
+	/*	for (int i = 1; i < expressions.length; i++) {
+			printText += " + \" \" + " + ExpressionTranslator.instance().translate(expressions[i]);
 		}
+*/
+		printText += "BasicEmu.instance().endPrint();\n";
 		
-		for (int i = 1; i < printExpressions.length; i++) {
-			printText += " + \" \" + " + ExpressionTranslator.instance().translate(printExpressions[i]);
-		}
-		*/
-	
 		return printText;
 	}
 }

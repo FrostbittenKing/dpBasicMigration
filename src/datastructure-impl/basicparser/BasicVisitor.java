@@ -511,14 +511,7 @@ public class BasicVisitor implements BasicParserVisitor {
 	}
 
 	public Object visit(ASTprintStatement node, Object data) {
-
-		ASTExpression[] expressions = new ASTExpression[node.jjtGetChild(0).jjtGetNumChildren()];
-
-		for(int i = 0; i < expressions.length; i++) {
-			expressions[i] = (ASTExpression) node.jjtGetChild(0).jjtGetChild(i);
-		}
-
-		Print printStatement = new Print(expressions);
+		Print printStatement = new Print(node);
 		pushOnTop(printStatement);
 		return null;
 	}
