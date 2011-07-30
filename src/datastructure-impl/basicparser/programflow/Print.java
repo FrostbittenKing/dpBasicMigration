@@ -11,7 +11,6 @@ public class Print extends Instruction{
 	
 	@Override
 	public String translate(){
-		
 		String printText = null;
 		if(printExpressions.length > 0) {
 			printText= ExpressionTranslator.instance().translate(printExpressions[0]);
@@ -20,6 +19,7 @@ public class Print extends Instruction{
 		for (int i = 1; i < printExpressions.length; i++) {
 			printText += " + \" \" + " + ExpressionTranslator.instance().translate(printExpressions[i]);
 		}
+	
 		return "System.out.println(" + printText + ");";
 	}
 }

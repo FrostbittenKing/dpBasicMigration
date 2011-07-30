@@ -1,5 +1,6 @@
 package basicparser.emu;
 
+import basicparser.ASTExpression;
 import basicparser.programflow.MultiNumber;
 
 import java.util.Random;
@@ -10,6 +11,7 @@ public class BasicEmu {
 	private Random random = new Random(System.currentTimeMillis());
 
 	private double lastRnd;
+	private int printCharCounter;
 	public MultiNumber rnd(MultiNumber x) {
 		if(x.getIntegerValue() == 0) {
 			return new MultiNumber(lastRnd);
@@ -70,12 +72,20 @@ public class BasicEmu {
 		return returnValue;
 	}
 	
-	public String spc(MultiNumber num){
+	public String spc(MultiNumber spaceCount){
 		String returnString = "";
-		for (int i = 0; i < num.getIntegerValue(); i++){
+		for (int i = 0; i < spaceCount.getIntegerValue(); i++){
 			returnString += " ";
 		}
 		return returnString;
+	}
+	
+	public String tab(MultiNumber tabCount){
+		
+		if (tabCount.getIntegerValue() - printCharCounter <= 0){
+			return "";
+		}
+		return spc(new MultiNumber(tabCount.getIntegerValue() - printCharCounter));
 	}
 	
 	public MultiNumber asc(String string){
@@ -83,6 +93,20 @@ public class BasicEmu {
 			throw new RuntimeException("Tried calling asc with empty argument");
 		}
 		return new MultiNumber(Character.getNumericValue(string.charAt(0)));
+	}
+	
+	public void startPrint(){
+		printCharCounter = 0;
+	}
+	
+	public void print(){
+		
+	}
+	
+	
+	
+	public void endPrint(){
+		
 	}
 
 	public static BasicEmu instance() {
