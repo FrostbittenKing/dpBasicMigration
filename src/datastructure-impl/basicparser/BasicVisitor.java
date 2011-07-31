@@ -296,12 +296,22 @@ public class BasicVisitor implements BasicParserGENVisitor {
 		for(ASTArrayDeclaration currentArrayDeclaration : node.arrayDeclarations) {
 			if(currentArrayDeclaration.name instanceof ASTNumberIdentifier) {
 				ASTNumberIdentifier numberIdentifier = (ASTNumberIdentifier) currentArrayDeclaration.name;
-				LinkedList<Integer> dimensions = new LinkedList<Integer>();
+				LinkedList<String> dimensions = new LinkedList<String>();
 				VariableTable.instance().getNumberArrays().put(digestName(numberIdentifier.value), dimensions);
-				for(String parameter : currentArrayDeclaration.parameters) {
-					dimensions.add(Integer.parseInt(parameter));
+				for(ASTExpression parameter : currentArrayDeclaration.parameters) {
+					dimensions.add(ExpressionTranslator.instance().translate(parameter));
 				}
 			}
+			
+			if(currentArrayDeclaration.name instanceof ASTStringIdentifier) {
+				ASTStringIdentifier stringIdentifier = (ASTStringIdentifier) currentArrayDeclaration.name;
+				LinkedList<String> dimensions = new LinkedList<String>();
+				VariableTable.instance().getNumberArrays().put(digestName(stringIdentifier.value), dimensions);
+				for(ASTExpression parameter : currentArrayDeclaration.parameters) {
+					dimensions.add(ExpressionTranslator.instance().translate(parameter));
+				}
+			}
+			
 		}
 		return null;
 	}

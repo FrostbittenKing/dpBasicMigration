@@ -209,11 +209,12 @@ void parseCommand():
 }
 
 
-void Expression() #void :
+ASTExpression Expression() #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral)) :
 {
 }
 {
-	(LogicalOrExpression()) #Expression(!(jjtree.peekNode() instanceof ASTStringLiteral))
+	(LogicalOrExpression()) 
+	{return jjtThis;}
 }
 
 void LogicalOrExpression() #void :
@@ -318,9 +319,10 @@ ASTArrayDeclaration ArrayDeclaration() #ArrayDeclaration:
 {
 	Token t;
 	ASTName name;
+	ASTExpression expression;
 }
 {
-	name = Name() { jjtThis.name = (SimpleNode) name.jjtGetChild(0);}<LPAREN> t=<INTEGER_LITERAL> {jjtThis.parameters.push(t.image);} ("," t=<INTEGER_LITERAL> {jjtThis.parameters.push(t.image);})* <RPAREN>
+	name = Name() { jjtThis.name = (SimpleNode) name.jjtGetChild(0);}<LPAREN> expression=Expression() {jjtThis.parameters.push(expression);} ("," expression=Expression() {jjtThis.parameters.push(expression);})* <RPAREN>
 	{return jjtThis;}
 }
 

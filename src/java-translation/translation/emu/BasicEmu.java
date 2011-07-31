@@ -1,12 +1,19 @@
 package translation.emu;
 
 import translation.MultiNumber;
+import translation.NameType;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Random;
+
+import basicparser.programflow.Return;
+
 
 public class BasicEmu {
 	private static BasicEmu instance;
-	
+
 	private Random random = new Random(System.currentTimeMillis());
 
 	private double lastRnd;
@@ -18,12 +25,12 @@ public class BasicEmu {
 		lastRnd = (double)random.nextInt(101) / 100;
 		return new MultiNumber(lastRnd);
 	}
-	
+
 	public String left(String string, MultiNumber endPosition){
 		if (string == null || string.length() == 0){
 			return "";
 		}
-		
+
 		try{
 			return string.substring(0, endPosition.getIntegerValue());
 		}
@@ -31,7 +38,7 @@ public class BasicEmu {
 			return string;
 		}
 	}
-	
+
 	public String right(String string, MultiNumber startPosition){
 		if (startPosition.getIntegerValue() == 0){
 			return "";
@@ -55,11 +62,11 @@ public class BasicEmu {
 			return string.substring(startPosition.getIntegerValue(), startPosition.getIntegerValue() + characterCount.getIntegerValue());
 		}
 	}
-	
+
 	public String chr(MultiNumber character){
 		return new String(Character.toChars(character.getIntegerValue()));
 	}
-	
+
 	public MultiNumber strToNum(String input){
 		MultiNumber returnValue = null;
 		try {
@@ -70,44 +77,97 @@ public class BasicEmu {
 		}
 		return returnValue;
 	}
-	
+
 	public String spc(MultiNumber spaceCount){
-		
+
 		String returnString = "";
 		for (int i = 0; i < spaceCount.getIntegerValue(); i++){
 			returnString += " ";
 		}
 		return returnString;
 	}
-	
+
 	public String tab(MultiNumber tabCount){
-		
+
 		if (tabCount.getIntegerValue() - printCharCounter <= 0){
 			return "";
 		}
 		return spc(new MultiNumber(tabCount.getIntegerValue() - printCharCounter));
 	}
-	
+
 	public MultiNumber asc(String string){
 		if (string == null || string.equals("")){
 			throw new RuntimeException("Tried calling asc with empty argument");
 		}
 		return new MultiNumber(Character.getNumericValue(string.charAt(0)));
 	}
-	
+
 	public void startPrint(){
 		printCharCounter = 0;
 	}
-	
+
 	public String print(String printText){
 		printCharCounter += printText.length();
 		return printText;
 	}
+
+	public String print(MultiNumber multiNumber) {
+		printCharCounter += multiNumber.toString().length();
+		return multiNumber.toString();
+	}
+
+	public static Object initializeNumberArray(MultiNumber ...multiNumbers) {
+
+		int [] dimensions = new int[multiNumbers.length];
+		for (int i = 0;i < dimensions.length; i++) {
+			dimensions[i] = multiNumbers[i].getIntegerValue();
+		}
+
+
+		Object returnArray =  Array.newInstance(MultiNumber.class, dimensions);
+		return instantiateArray(returnArray, NameType.Number);
+
+	}
 	
+	public static Object initializeStringArray(MultiNumber ...multiNumbers) {
+
+		int [] dimensions = new int[multiNumbers.length];
+		for (int i = 0;i < dimensions.length; i++) {
+			dimensions[i] = multiNumbers[i].getIntegerValue();
+		}
+
+
+		Object returnArray =  Array.newInstance(MultiNumber.class, dimensions);
+		return instantiateArray(returnArray, NameType.String);
+
+	}
 	
-	
+
+	private static Object instantiateArray(Object array, NameType type) {
+		if (array != null && array.getClass().isArray()) {
+			int length = Array.getLength(array);
+			for (int i = 0; i < length; i++) {
+				Object arrayElement = Array.get(array, i);
+				instantiateArray(arrayElement,type);
+				if (array != null && arrayElement == null) {
+					switch (type) {
+					case Number:
+						Array.set(array, i, new MultiNumber());
+						break;
+						
+					case String:
+						Array.set(array, i, "");
+					}
+				}
+			}
+
+		}
+		return array;
+	}
+
+
 	public void endPrint(){
-		
+
 	}
 
 	public static BasicEmu instance() {

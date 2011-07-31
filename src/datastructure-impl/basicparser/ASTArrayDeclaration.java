@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 public class ASTArrayDeclaration extends SimpleNode {
         public SimpleNode name;
-    public LinkedList<String> parameters = new LinkedList<String>();
+    public LinkedList<ASTExpression> parameters = new LinkedList<ASTExpression>();
 
 	public ASTArrayDeclaration(int id) {
 		super(id);

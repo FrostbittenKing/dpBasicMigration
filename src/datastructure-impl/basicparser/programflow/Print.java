@@ -52,6 +52,9 @@ public class Print extends Instruction{
 						|| basicFunction.jjtGetChild(0) instanceof ASTAscii) {
 					printText += "System.out.print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");" + LINE_SEPARATOR;
 				}
+				else {
+					printText += "System.out.print(BasicEmu.instance().print(" + ExpressionTranslator.instance().translate(expressions[i]) + "));" + LINE_SEPARATOR;
+				}
 			}
 
 			else {

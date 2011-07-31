@@ -6,13 +6,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import basicparser.ASTExpression;
 import basicparser.ASTName.NameType;
 
 public class VariableTable {
 	private LinkedList<String> strings = new LinkedList<String>();
 	private LinkedList<String> numbers = new LinkedList<String>();
-	private HashMap<String, LinkedList<Integer>> stringArrays = new HashMap<String, LinkedList<Integer>>();
-	private HashMap<String, LinkedList<Integer>> numberArrays = new HashMap<String, LinkedList<Integer>>();
+	private HashMap<String, LinkedList<ASTExpression>> stringArrays = new HashMap<String, LinkedList<ASTExpression>>();
+	private HashMap<String, LinkedList<String>> numberArrays = new HashMap<String, LinkedList<String>>();
 
 	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
 	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
@@ -30,11 +31,11 @@ public class VariableTable {
 		return numbers;
 	}
 
-	public HashMap<String, LinkedList<Integer>> getStringArrays() {
+	public HashMap<String, LinkedList<ASTExpression>> getStringArrays() {
 		return stringArrays;
 	}
 
-	public HashMap<String, LinkedList<Integer>> getNumberArrays() {
+	public HashMap<String, LinkedList<String>> getNumberArrays() {
 		return numberArrays;
 	}
 
@@ -47,7 +48,7 @@ public class VariableTable {
 			result += "static MultiNumber " + number + " = new MultiNumber();" + LINE_SEPARATOR;
 		}
 
-		for(Map.Entry<String, LinkedList<Integer>> strArray : stringArrays.entrySet()) {
+		for(Map.Entry<String, LinkedList<ASTExpression>> strArray : stringArrays.entrySet()) {
 			result += "static String";
 			for(int i = 0; i < strArray.getValue().size(); i++) {
 				result += "[]";
@@ -55,26 +56,32 @@ public class VariableTable {
 
 			result += " " + strArray.getKey() + " = {"; //variable name + = + opening brace
 
-			result += instantiateArray(strArray.getValue(), 1, NameType.String);
+	//		result += instantiateArray(strArray.getValue(), 1, NameType.String);
 			result += "};" + LINE_SEPARATOR;
 		}
 
-		for(Map.Entry<String, LinkedList<Integer>> numArray : numberArrays.entrySet()) {
+		for(Map.Entry<String, LinkedList<String>> numArray : numberArrays.entrySet()) {
 			result += "static MultiNumber";
 			for(int i = 0; i < numArray.getValue().size(); i++) {
 				result += "[]";
 			} //number of dimensions
 
-			result += " " + numArray.getKey() + " = {"; //variable name + = + opening brace
-
+			result += " " + numArray.getKey() + " = " + "BasicEmu.initializeNumberArray(";
+			for (int i = 0; i < numArray.getValue().size(); i++) {
+				result += numArray.getValue().get(i) + ",";
+			}
+			result = result.substring(0, result.length() - 1) + ");" + LINE_SEPARATOR;
+			//variable name + = + opening brace
+			/*
 			result += instantiateArray(numArray.getValue(), 1, NameType.Number);
-			result += "};" + LINE_SEPARATOR;
+			result += "};" + LINE_SEPARATOR;*/
 		}
 
 		return result;
 	}
 
-	private String instantiateArray(LinkedList<Integer> dimensions, int index, NameType type) {
+	/*
+	private String instantiateArray(LinkedList<ASTExpression> dimensions, int index, NameType type) {
 		String returnString = "";
 		if(index == dimensions.size()) {
 			for(int i = 0; i < dimensions.get(index-1); i++) {
@@ -95,7 +102,7 @@ public class VariableTable {
 		}
 		return returnString.substring(0, returnString.length()-1);
 	}
-
+*/
 	public static VariableTable instance() {
 		if(instance == null) {
 			instance = new VariableTable();
