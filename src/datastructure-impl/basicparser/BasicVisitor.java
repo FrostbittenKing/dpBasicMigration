@@ -306,7 +306,7 @@ public class BasicVisitor implements BasicParserGENVisitor {
 			if(currentArrayDeclaration.name instanceof ASTStringIdentifier) {
 				ASTStringIdentifier stringIdentifier = (ASTStringIdentifier) currentArrayDeclaration.name;
 				LinkedList<String> dimensions = new LinkedList<String>();
-				VariableTable.instance().getNumberArrays().put(digestName(stringIdentifier.value), dimensions);
+				VariableTable.instance().getStringArrays().put(digestName(stringIdentifier.value), dimensions);
 				for(ASTExpression parameter : currentArrayDeclaration.parameters) {
 					dimensions.add(ExpressionTranslator.instance().translate(parameter));
 				}

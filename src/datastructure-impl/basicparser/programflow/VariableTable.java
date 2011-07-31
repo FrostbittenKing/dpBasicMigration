@@ -12,7 +12,7 @@ import basicparser.ASTName.NameType;
 public class VariableTable {
 	private LinkedList<String> strings = new LinkedList<String>();
 	private LinkedList<String> numbers = new LinkedList<String>();
-	private HashMap<String, LinkedList<ASTExpression>> stringArrays = new HashMap<String, LinkedList<ASTExpression>>();
+	private HashMap<String, LinkedList<String>> stringArrays = new HashMap<String, LinkedList<String>>();
 	private HashMap<String, LinkedList<String>> numberArrays = new HashMap<String, LinkedList<String>>();
 
 	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
@@ -31,7 +31,7 @@ public class VariableTable {
 		return numbers;
 	}
 
-	public HashMap<String, LinkedList<ASTExpression>> getStringArrays() {
+	public HashMap<String, LinkedList<String>> getStringArrays() {
 		return stringArrays;
 	}
 
@@ -48,61 +48,53 @@ public class VariableTable {
 			result += "static MultiNumber " + number + " = new MultiNumber();" + LINE_SEPARATOR;
 		}
 
-		for(Map.Entry<String, LinkedList<ASTExpression>> strArray : stringArrays.entrySet()) {
+		for(Map.Entry<String, LinkedList<String>> strArray : stringArrays.entrySet()) {
 			result += "static String";
 			for(int i = 0; i < strArray.getValue().size(); i++) {
 				result += "[]";
-			} //number of dimensions
+			}
+			
+			result += " " + strArray.getKey() + " = (String ";
+			
 
-			result += " " + strArray.getKey() + " = {"; //variable name + = + opening brace
-
-	//		result += instantiateArray(strArray.getValue(), 1, NameType.String);
-			result += "};" + LINE_SEPARATOR;
+			for(int i = 0; i < strArray.getValue().size(); i++) {
+				result += "[]";
+			}
+			
+			result += ")"+ "BasicEmu.initializeStringArray(";
+			
+			
+			for (int i = 0; i < strArray.getValue().size(); i++) {
+				result += strArray.getValue().get(i) + ",";
+			}
+			result = result.substring(0, result.length() - 1) + ");" + LINE_SEPARATOR;
+			
 		}
 
 		for(Map.Entry<String, LinkedList<String>> numArray : numberArrays.entrySet()) {
 			result += "static MultiNumber";
 			for(int i = 0; i < numArray.getValue().size(); i++) {
 				result += "[]";
-			} //number of dimensions
-
-			result += " " + numArray.getKey() + " = " + "BasicEmu.initializeNumberArray(";
+			}
+			result += " " + numArray.getKey() + " = (MultiNumber ";
+			
+			for(int i = 0; i < numArray.getValue().size(); i++) {
+				result += "[]";
+			}
+			
+			result += ")" + "BasicEmu.initializeNumberArray(";
+			
 			for (int i = 0; i < numArray.getValue().size(); i++) {
 				result += numArray.getValue().get(i) + ",";
 			}
 			result = result.substring(0, result.length() - 1) + ");" + LINE_SEPARATOR;
-			//variable name + = + opening brace
-			/*
-			result += instantiateArray(numArray.getValue(), 1, NameType.Number);
-			result += "};" + LINE_SEPARATOR;*/
+			
 		}
 
 		return result;
 	}
 
-	/*
-	private String instantiateArray(LinkedList<ASTExpression> dimensions, int index, NameType type) {
-		String returnString = "";
-		if(index == dimensions.size()) {
-			for(int i = 0; i < dimensions.get(index-1); i++) {
-				switch (type){
-					case String:
-						returnString += "\"\",";
-					break;
-					case Number:
-						returnString += "new MultiNumber(),";
-					break;
-				}
-			}
-			return returnString.substring(0, returnString.length()-1);
-		}
 
-		for(int i = 0; i < dimensions.get(index-1); i++) {
-			returnString += "{" + instantiateArray(dimensions, index+1, type) + "},";
-		}
-		return returnString.substring(0, returnString.length()-1);
-	}
-*/
 	public static VariableTable instance() {
 		if(instance == null) {
 			instance = new VariableTable();

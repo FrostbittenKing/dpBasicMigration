@@ -139,7 +139,7 @@ public class BasicEmu {
 		}
 
 
-		Object returnArray =  Array.newInstance(MultiNumber.class, dimensions);
+		Object returnArray =  Array.newInstance(String.class, dimensions);
 		return instantiateArray(returnArray, NameType.String);
 
 	}
@@ -158,7 +158,7 @@ public class BasicEmu {
 						break;
 						
 					case String:
-						Array.set(array, i, "");
+						Array.set(array, i, new String(""));
 					}
 				}
 			}
