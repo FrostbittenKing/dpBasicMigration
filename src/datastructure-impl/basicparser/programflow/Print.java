@@ -1,7 +1,15 @@
 package basicparser.programflow;
 
+import basicparser.ASTAscii;
+import basicparser.ASTChar;
+import basicparser.ASTLeft;
+import basicparser.ASTRandom;
 import basicparser.ASTExpression;
 import basicparser.ASTBasicFunctions;
+import basicparser.ASTRight;
+import basicparser.ASTSpace;
+import basicparser.ASTStrToNum;
+import basicparser.ASTSubstring;
 import basicparser.ASTprintStatement;
 import basicparser.ASTTab;
 import basicparser.Node;
@@ -30,8 +38,20 @@ public class Print extends Instruction{
 		for(int i = 0; i < expressions.length; i++) {
 
 			expressions[i] = (ASTExpression) printStatement.jjtGetChild(0).jjtGetChild(i);
-			if (expressions[i].jjtGetChild(0).jjtGetChild(0) instanceof ASTBasicFunctions) {
-				printText += "System.out.print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");" + LINE_SEPARATOR;
+			Node basicFunction;
+			if ((basicFunction = expressions[i].jjtGetChild(0).jjtGetChild(0)) instanceof ASTBasicFunctions) {
+				
+				if (basicFunction.jjtGetChild(0) instanceof ASTRandom
+						|| basicFunction.jjtGetChild(0) instanceof ASTLeft
+						|| basicFunction.jjtGetChild(0) instanceof ASTRight
+						|| basicFunction.jjtGetChild(0) instanceof ASTSubstring
+						|| basicFunction.jjtGetChild(0) instanceof ASTChar
+						|| basicFunction.jjtGetChild(0) instanceof ASTStrToNum
+						|| basicFunction.jjtGetChild(0) instanceof ASTSpace
+						|| basicFunction.jjtGetChild(0) instanceof ASTTab
+						|| basicFunction.jjtGetChild(0) instanceof ASTAscii) {
+					printText += "System.out.print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");" + LINE_SEPARATOR;
+				}
 			}
 
 			else {
