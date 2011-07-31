@@ -18,6 +18,7 @@ public class BasicEmu {
 
 	private double lastRnd;
 	private int printCharCounter;
+	private String printText;
 	public MultiNumber rnd(MultiNumber x) {
 		if(x.getIntegerValue() == 0) {
 			return new MultiNumber(lastRnd);
@@ -104,16 +105,17 @@ public class BasicEmu {
 
 	public void startPrint(){
 		printCharCounter = 0;
+		printText = "";
 	}
 
-	public String print(String printText){
+	public void print(String printText){
 		printCharCounter += printText.length();
-		return printText;
+		this.printText += printText;
 	}
 
-	public String print(MultiNumber multiNumber) {
+	public void print(MultiNumber multiNumber) {
 		printCharCounter += multiNumber.toString().length();
-		return multiNumber.toString();
+		this.printText += multiNumber.toString();
 	}
 
 	public static Object initializeNumberArray(MultiNumber ...multiNumbers) {
@@ -167,7 +169,7 @@ public class BasicEmu {
 
 
 	public void endPrint(){
-
+		System.out.println(printText);
 	}
 
 	public static BasicEmu instance() {

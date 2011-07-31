@@ -38,7 +38,7 @@ public class Print extends Instruction{
 		for(int i = 0; i < expressions.length; i++) {
 
 			expressions[i] = (ASTExpression) printStatement.jjtGetChild(0).jjtGetChild(i);
-			Node basicFunction;
+			/*Node basicFunction;
 			if ((basicFunction = expressions[i].jjtGetChild(0).jjtGetChild(0)) instanceof ASTBasicFunctions) {
 				
 				if (basicFunction.jjtGetChild(0) instanceof ASTRandom
@@ -52,14 +52,11 @@ public class Print extends Instruction{
 						|| basicFunction.jjtGetChild(0) instanceof ASTAscii) {
 					printText += "System.out.print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");" + LINE_SEPARATOR;
 				}
-				else {
-					printText += "System.out.print(BasicEmu.instance().print(" + ExpressionTranslator.instance().translate(expressions[i]) + "));" + LINE_SEPARATOR;
-				}
-			}
+			}*/
 
-			else {
-				printText += "System.out.print(BasicEmu.instance().print(" + ExpressionTranslator.instance().translate(expressions[i]) + "));" + LINE_SEPARATOR;
-			}
+			//else {
+				printText += "BasicEmu.instance().print(" + ExpressionTranslator.instance().translate(expressions[i]) + ");" + LINE_SEPARATOR;
+			//}
 		}
 
 
