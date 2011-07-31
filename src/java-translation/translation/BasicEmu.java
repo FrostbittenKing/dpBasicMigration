@@ -1,4 +1,4 @@
-package translation.emu;
+package translation;
 
 import translation.MultiNumber;
 import translation.NameType;

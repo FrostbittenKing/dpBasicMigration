@@ -94,7 +94,7 @@ public class ProgramGraph implements ConstructContainer {
 		String header =
 				"import java.util.Stack;" + LINE_SEPARATOR +
 				"import translation.MultiNumber;" + LINE_SEPARATOR +
-				"import translation.emu.BasicEmu;" + LINE_SEPARATOR + 
+				"import translation.BasicEmu;" + LINE_SEPARATOR + 
 				LINE_SEPARATOR +
 				"public class Main {" + LINE_SEPARATOR +
 				"\tprivate static Main instance;" + LINE_SEPARATOR +
