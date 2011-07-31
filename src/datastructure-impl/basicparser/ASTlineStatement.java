@@ -9,7 +9,7 @@ public class ASTlineStatement extends SimpleNode {
 		super(id);
 	}
 
-	public ASTlineStatement(BasicParser p, int id) {
+	public ASTlineStatement(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -17,7 +17,7 @@ public class ASTlineStatement extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

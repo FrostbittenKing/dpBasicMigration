@@ -11,6 +11,8 @@ public class ProgramGraph implements ConstructContainer {
 	private LinkedList<Construct> returnHeads = new LinkedList<Construct>();
 	public static final String RETURN_CALL_METHOD_NAME_STACK = "returnCallMethodNameStack";
 	public static final String RETURN_METHOD_PREFIX = "return_";
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
 
 	public void push(Construct construct) {
 		if(first == null) {
@@ -90,32 +92,34 @@ public class ProgramGraph implements ConstructContainer {
 		heads.addFirst(child);
 
 		String header =
-				"import java.util.Stack;\n" +
-				"\n" +
-				"public class Main {\n" +
-				"\tprivate static Main instance;\n" +
-				"\t\n" +
-				"\tpublic static void main(String[] args) {\n" +
-				"\t\twhile(true) {\n" +
-				"\t\t\ttry {\n" +
-				"\t\t\t\tinstance().getClass().getDeclaredMethod(instance().nextCallMethodName).invoke(instance());\n" +
-				"\t\t\t}\n" +
-				"\t\t\tcatch(Exception e) {\n" +
-				"\t\t\t\tthrow new RuntimeException(\"Method invocation error \" + e);\n" +
-				"\t\t\t}\n" +
-				"\t\t}\n" +
-				"\t}\n" +
-				"\n" +
-				"\tprivate static Main instance() {\n" +
-				"\t\tif(instance == null) {\n" +
-				"\t\t\tinstance = new Main();\n" +
-				"\t\t}\n" +
-				"\t\treturn instance;\n" +
-				"\t}\r\n";
-		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGoMethodFromLabel(heads.getFirst().getLabel())) + "\r\n";
+				"import java.util.Stack;" + LINE_SEPARATOR +
+				"import translation.MultiNumber;" + LINE_SEPARATOR +
+				"import translation.emu.BasicEmu;" + LINE_SEPARATOR + 
+				LINE_SEPARATOR +
+				"public class Main {" + LINE_SEPARATOR +
+				"\tprivate static Main instance;" + LINE_SEPARATOR +
+				"\t" + LINE_SEPARATOR +
+				"\tpublic static void main(String[] args) {" + LINE_SEPARATOR +
+				"\t\twhile(true) {" + LINE_SEPARATOR +
+				"\t\t\ttry {" + LINE_SEPARATOR +
+				"\t\t\t\tinstance().getClass().getDeclaredMethod(instance().nextCallMethodName).invoke(instance());" + LINE_SEPARATOR +
+				"\t\t\t}" + LINE_SEPARATOR +
+				"\t\t\tcatch(Exception e) {" + LINE_SEPARATOR +
+				"\t\t\t\tthrow new RuntimeException(\"Method invocation error \" + e);" + LINE_SEPARATOR +
+				"\t\t\t}" + LINE_SEPARATOR +
+				"\t\t}" + LINE_SEPARATOR +
+				"\t}" + LINE_SEPARATOR +
+				LINE_SEPARATOR +
+				"\tprivate static Main instance() {" + LINE_SEPARATOR +
+				"\t\tif(instance == null) {" + LINE_SEPARATOR +
+				"\t\t\tinstance = new Main();" + LINE_SEPARATOR +
+				"\t\t}" + LINE_SEPARATOR +
+				"\t\treturn instance;" + LINE_SEPARATOR +
+				"\t}" + LINE_SEPARATOR;
+		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGoMethodFromLabel(heads.getFirst().getLabel())) + LINE_SEPARATOR;
 		String returnCallMethodNameStackDecl = "private Stack<String> returnCallMethodNameStack = new Stack<String>();";
 		String footer =
-				"   }\r\n";
+				"   }" + LINE_SEPARATOR;
 
 		String result = "";
 
@@ -129,15 +133,15 @@ public class ProgramGraph implements ConstructContainer {
 		for(Construct head : returnHeads) {
 			result += translateMethod("private void " + getReturnMethodFromLabel(head.getLabel()) + "()", head);
 		}
-		result += nextMethodCallNameDecl + "\r\n";
-		result += returnCallMethodNameStackDecl + "\r\n";
+		result += nextMethodCallNameDecl + LINE_SEPARATOR;
+		result += returnCallMethodNameStackDecl + LINE_SEPARATOR;
 		result += footer;
 		return result;
 	}
 
 	private String translateMethod(String header, Construct head) {
 		String result = "";
-		result += header + "{\r\n";
+		result += header + "{" + LINE_SEPARATOR;
 		Construct next = head;
 		//if the construct we are translating is nested in a construct container we have to construct the
 		//method from the construct container starting by the child
@@ -146,12 +150,12 @@ public class ProgramGraph implements ConstructContainer {
 			next = ((Construct)head.getTop()).getNext();
 		}
 		for(Construct c = next; c != null; c = c.getNext()) {
-			result += c.translate() + "\r\n";
+			result += c.translate() + LINE_SEPARATOR;
 			if(c instanceof Goto || c instanceof Gosub || c instanceof End) {
 				break;
 			}
 		}
-		result += "}\r\n";
+		result += "}" + LINE_SEPARATOR;
 		return result;
 	}
 

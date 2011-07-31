@@ -11,7 +11,7 @@ public class ASTMult extends SimpleNode {
 		super(id);
 	}
 
-	public ASTMult(BasicParser p, int id) {
+	public ASTMult(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -19,7 +19,7 @@ public class ASTMult extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 

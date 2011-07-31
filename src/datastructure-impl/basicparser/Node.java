@@ -37,6 +37,6 @@ interface Node {
     public LinkedList<String> getData();
 
   /** Accept the visitor. **/
-  public Object jjtAccept(BasicParserVisitor visitor, Object data);
+  public Object jjtAccept(BasicParserGENVisitor visitor, Object data);
 }
 /* JavaCC - OriginalChecksum=ad7b496adef5a72b7eff76b7bf67ca1a (do not edit this line) */

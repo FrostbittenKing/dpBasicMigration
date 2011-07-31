@@ -10,7 +10,7 @@ public class ASTdelimStatement extends SimpleNode {
 		super(id);
 	}
 
-	public ASTdelimStatement(BasicParser p, int id) {
+	public ASTdelimStatement(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -18,7 +18,7 @@ public class ASTdelimStatement extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

@@ -8,6 +8,9 @@ import java.lang.String;
 public class Gosub extends Instruction {
 	private int returnTarget;
 
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
+
 	public Gosub() {
 	}
 
@@ -17,8 +20,8 @@ public class Gosub extends Instruction {
 
 	public String translate() {
 		String result =
-				ProgramGraph.RETURN_CALL_METHOD_NAME_STACK + ".push(\"" + ProgramGraph.RETURN_METHOD_PREFIX + returnTarget + "\");\r\n" +
-				ProgramGraph.makeNextCallMethodNameAssignment(ProgramGraph.getGoMethodFromLabel(getNext().getLabel())) + "\r\n" +
+				ProgramGraph.RETURN_CALL_METHOD_NAME_STACK + ".push(\"" + ProgramGraph.RETURN_METHOD_PREFIX + returnTarget + "\");" + LINE_SEPARATOR +
+				ProgramGraph.makeNextCallMethodNameAssignment(ProgramGraph.getGoMethodFromLabel(getNext().getLabel())) + LINE_SEPARATOR +
 				"return;";
 		return result;
 	}

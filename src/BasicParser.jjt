@@ -9,61 +9,11 @@ options {
 	DEBUG_TOKEN_MANAGER = true;*/
 }
 
-PARSER_BEGIN(BasicParser)
-package basicparser;
-
-import basicparser.programflow.ProgramGraph;
-import basicparser.SimpleNode;
-import basicparser.programflow.GraphBuilder;
-import java.io.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-/** Simple brace matcher. */
-public class BasicParser {
-
-	/**
-	 * Main entry point.
-	 */
-	public static void main(String args[]) throws ParseException, FileNotFoundException, IOException {
-		InputStream instream = args.length == 0 ? System.in : new FileInputStream(args[0]);
-		try {
-		    SimpleNode root = pass1(instream);
-			ProgramGraph graph = pass2(root);
-			File f = new java.io.File("Main.java");
-			f.createNewFile();
-			pass3(graph, new FileOutputStream(f));
-		}
-		catch(Exception e) {
-			System.out.println("Oops.");
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	public static SimpleNode pass1(InputStream instream) throws ParseException {
-		BasicParser parser = new BasicParser(instream);
-		ASTparseRoot r = parser.parseRoot();
-		r.dump(">");
-		return r;
-	}
-
-	public static ProgramGraph pass2(SimpleNode root) throws ParseException {
-		GraphBuilder builder = new GraphBuilder();
-		return builder.build(root);
-	}
-
-	public static void pass3(ProgramGraph graph, OutputStream out) throws IOException {
-		System.out.println("<<<JAVA>>>");
-		graph.translate(out);
-	}
-}
-
-PARSER_END(BasicParser)
+PARSER_BEGIN(BasicParserGEN)
+	package basicparser;
+		public class BasicParserGEN {
+		}		       	     		    
+PARSER_END(BasicParserGEN)
 
 SKIP : /* WHITE SPACE */
 {

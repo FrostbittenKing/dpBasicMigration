@@ -10,7 +10,7 @@ public class ASTLiteral extends SimpleNode {
 		super(id);
 	}
 
-	public ASTLiteral(BasicParser p, int id) {
+	public ASTLiteral(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -19,7 +19,7 @@ public class ASTLiteral extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

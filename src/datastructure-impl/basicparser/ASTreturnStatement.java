@@ -8,13 +8,13 @@ class ASTreturnStatement extends SimpleNode {
     super(id);
   }
 
-  public ASTreturnStatement(BasicParser p, int id) {
+  public ASTreturnStatement(BasicParserGEN p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+  public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }

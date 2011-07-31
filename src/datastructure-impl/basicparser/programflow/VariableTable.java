@@ -14,6 +14,10 @@ public class VariableTable {
 	private HashMap<String, LinkedList<Integer>> stringArrays = new HashMap<String, LinkedList<Integer>>();
 	private HashMap<String, LinkedList<Integer>> numberArrays = new HashMap<String, LinkedList<Integer>>();
 
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
+
+	
 	public boolean contains(String name) {
 		return strings.contains(name) || numbers.contains(name) || stringArrays.containsKey(name) || numberArrays.containsKey(name);
 	}
@@ -37,10 +41,10 @@ public class VariableTable {
 	public String translate() {
 		String result = "";
 		for(String string : strings) {
-			result += "static String " + string + " = \"\";\r\n";
+			result += "static String " + string + " = \"\";" + LINE_SEPARATOR;
 		}
 		for(String number : numbers) {
-			result += "static MultiNumber " + number + " = new MultiNumber();\r\n";
+			result += "static MultiNumber " + number + " = new MultiNumber();" + LINE_SEPARATOR;
 		}
 
 		for(Map.Entry<String, LinkedList<Integer>> strArray : stringArrays.entrySet()) {
@@ -52,7 +56,7 @@ public class VariableTable {
 			result += " " + strArray.getKey() + " = {"; //variable name + = + opening brace
 
 			result += instantiateArray(strArray.getValue(), 1, NameType.String);
-			result += "};\r\n";
+			result += "};" + LINE_SEPARATOR;
 		}
 
 		for(Map.Entry<String, LinkedList<Integer>> numArray : numberArrays.entrySet()) {
@@ -64,7 +68,7 @@ public class VariableTable {
 			result += " " + numArray.getKey() + " = {"; //variable name + = + opening brace
 
 			result += instantiateArray(numArray.getValue(), 1, NameType.Number);
-			result += "};\r\n";
+			result += "};" + LINE_SEPARATOR;
 		}
 
 		return result;

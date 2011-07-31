@@ -5,6 +5,9 @@ import java.lang.String;
 public class InstantSimpleInstruction extends Instruction{
 	private String java;
 
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
+
 	public InstantSimpleInstruction() {
 	}
 
@@ -23,6 +26,6 @@ public class InstantSimpleInstruction extends Instruction{
 	@Override
 	public String translate(){
 		System.out.println("TRANSLATE ISI");
-		return java + "\r\n";
+		return java + LINE_SEPARATOR;
 	}
 }

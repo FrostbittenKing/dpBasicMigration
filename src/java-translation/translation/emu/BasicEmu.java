@@ -1,7 +1,6 @@
-package basicparser.emu;
+package translation.emu;
 
-import basicparser.ASTExpression;
-import basicparser.programflow.MultiNumber;
+import translation.MultiNumber;
 
 import java.util.Random;
 

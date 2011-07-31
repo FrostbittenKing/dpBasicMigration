@@ -10,7 +10,7 @@ public class ASTtxStatement extends SimpleNode {
 		super(id);
 	}
 
-	public ASTtxStatement(BasicParser p, int id) {
+	public ASTtxStatement(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -22,7 +22,7 @@ public class ASTtxStatement extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

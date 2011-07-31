@@ -8,13 +8,13 @@ class ASTAbsolute extends SimpleNode {
     super(id);
   }
 
-  public ASTAbsolute(BasicParser p, int id) {
+  public ASTAbsolute(BasicParserGEN p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+  public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }

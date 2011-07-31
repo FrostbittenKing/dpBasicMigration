@@ -12,7 +12,7 @@ public class ASTName extends SimpleNode {
 		super(id);
 	}
 
-	public ASTName(BasicParser p, int id) {
+	public ASTName(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -20,7 +20,7 @@ public class ASTName extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

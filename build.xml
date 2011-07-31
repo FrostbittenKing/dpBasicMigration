@@ -5,11 +5,41 @@
     <property name="java-gen.dir" value="java-gen"/>
     <property name="build.dir" value="build"/>
     <property name="datastructure-impl.dir" value="${src.dir}/datastructure-impl"/>
+    <property name="java-translation.dir" value="${src.dir}/java-translation"/>
+
     <property name="mainclass" value="basicparser.BasicParser"/>
+    
+    <property name="translation-output.dir" value="java-translation"/>
+    <property name="translation-build.dir" value="translation-build"/>
+    <property name="translation-mainclass" value="Main"/>
     
     <path id="project.classpath">
       <pathelement location="${build.dir}"/>
     </path>
+
+    <path id="generatedjava.classpath">
+      <pathelement location="${translation-build.dir}"/>
+    </path>
+  </target>
+
+  <target name="run-java" depends="run-translate">
+    <java fork="true" classpathref="generatedjava.classpath" classname="${translation-mainclass}"/>
+  </target>
+
+  <target name="run-translate" depends="init">
+    <available property="java-translation.exists" file="${translation-output.dir}"/>
+    <fail unless="java-translation.exists">
+      ### error, no translated javacode to run###
+    </fail>
+    <copy todir="${translation-output.dir}">
+      <fileset dir="${java-translation.dir}">
+	<include name="**/*.java"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${translation-build.dir}"/>
+    <javac srcdir="${translation-output.dir}"
+	   destdir="${translation-build.dir}"
+	   classpathref="project.classpath" />
   </target>
 
   <target name="run" depends="compile">
@@ -48,6 +78,8 @@
     <delete includeemptydirs="true">
       <fileset dir="${build.dir}"/>
       <fileset dir="${java-gen.dir}"/>
+      <fileset dir="${translation-output.dir}"/>
+      <fileset dir="${translation-build.dir}"/>
     </delete>
   </target>
   

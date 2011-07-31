@@ -1,7 +1,6 @@
 package basicparser.programflow;
 
 import basicparser.*;
-import basicparser.emu.BasicEmu;
 
 import java.lang.String;
 

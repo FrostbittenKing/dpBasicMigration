@@ -1,4 +1,4 @@
-package basicparser.programflow;
+package translation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import javax.swing.text.html.HTMLDocument.Iterator;
 import javax.swing.text.rtf.RTFEditorKit;
 
-import basicparser.programflow.MultiNumber;
 
 public class MultiNumber {
 	private Integer ivalue;

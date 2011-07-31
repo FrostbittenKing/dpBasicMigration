@@ -2,7 +2,7 @@ package basicparser.programflow;
 
 import basicparser.ASTExpression;
 import basicparser.BasicVisitor;
-import basicparser.JJTBasicParserState;
+import basicparser.JJTBasicParserGENState;
 import basicparser.SimpleNode;
 
 import java.lang.String;

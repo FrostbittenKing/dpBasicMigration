@@ -17,7 +17,7 @@ import basicparser.programflow.ConstructContainer;
 import basicparser.programflow.Gosub;
 import basicparser.programflow.Loop;
 
-public class BasicVisitor implements BasicParserVisitor {
+public class BasicVisitor implements BasicParserGENVisitor {
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
 	private HashMap<Integer, LinkedList<Construct>> goTargets;
 	private LinkedList<Integer> returnTargets;

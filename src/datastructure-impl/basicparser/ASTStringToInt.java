@@ -8,13 +8,13 @@ class ASTStringToInt extends SimpleNode {
     super(id);
   }
 
-  public ASTStringToInt(BasicParser p, int id) {
+  public ASTStringToInt(BasicParserGEN p, int id) {
     super(p, id);
   }
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+  public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
 }

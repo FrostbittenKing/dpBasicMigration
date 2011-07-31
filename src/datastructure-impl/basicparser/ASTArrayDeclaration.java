@@ -12,7 +12,7 @@ public class ASTArrayDeclaration extends SimpleNode {
 		super(id);
 	}
 
-	public ASTArrayDeclaration(BasicParser p, int id) {
+	public ASTArrayDeclaration(BasicParserGEN p, int id) {
 		super(p, id);
 	}
 
@@ -20,7 +20,7 @@ public class ASTArrayDeclaration extends SimpleNode {
 	/**
 	 * Accept the visitor. *
 	 */
-	public Object jjtAccept(BasicParserVisitor visitor, Object data) {
+	public Object jjtAccept(BasicParserGENVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 }

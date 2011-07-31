@@ -5,9 +5,13 @@ package basicparser.programflow;
  * after the goto's are re-linked by the graph builder the next pointer points to the semantic target of the goto
  */
 public class Goto extends Construct {
+	
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
+	
 	public String translate() {
 		String result =
-				ProgramGraph.makeNextCallMethodNameAssignment(ProgramGraph.getGoMethodFromLabel(this.getNext().getLabel())) + "\r\n" +
+				ProgramGraph.makeNextCallMethodNameAssignment(ProgramGraph.getGoMethodFromLabel(this.getNext().getLabel())) + LINE_SEPARATOR +
 				"return;";
 		return result;
 	}

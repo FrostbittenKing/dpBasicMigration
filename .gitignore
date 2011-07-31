@@ -15,3 +15,4 @@ build
 !.gitignore
 bin
 .classpath
+/java-translation

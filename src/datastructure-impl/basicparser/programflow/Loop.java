@@ -12,6 +12,10 @@ public class Loop extends Construct implements ConstructContainer {
 	private final String variable;
 	private Construct first = null;
 
+	public static final String LINE_SEPARATOR_SYSTEM_PROPERTY = "line.separator";
+	public static final String LINE_SEPARATOR = System.getProperty(LINE_SEPARATOR_SYSTEM_PROPERTY);
+
+	
 	public void push(Construct construct) {
 		if(first == null) {
 			first = construct;
@@ -56,11 +60,10 @@ public class Loop extends Construct implements ConstructContainer {
 		String result = "";
 		//first translate starting from the child till the end
 		for(Construct c = child; c != null; c = c.getNext()) {
-			result += c.translate();
-			result += "\r\n";
+			result += c.translate() + LINE_SEPARATOR;
 		}
 		//then increment the counter
-		result += variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ");\r\n";
+		result += variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ");" + LINE_SEPARATOR;
 		//then translate the loop in a normal way but without the initial assignment
 		result += translate(true);
 
@@ -79,10 +82,9 @@ public class Loop extends Construct implements ConstructContainer {
 				: variable + ".assign(" + ExpressionTranslator.instance().translate(initialValue) + "); ";
 		result +=
 				"MultiNumber.lt( " + variable + "," + ExpressionTranslator.instance().translate(upperBoundary) + ").isTrue(); " +
-				variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ")) {\r\n";
+				variable + " = MultiNumber.add(" + variable + ", " + (step != null ? ExpressionTranslator.instance().translate(step) : "1") + ")) {" + LINE_SEPARATOR;
 		for(Construct c = first; c != null; c = c.getNext()) {
-			result += c.translate();
-			result += "\r\n";
+			result += c.translate() + LINE_SEPARATOR;
 		}
 		result += "}";
 		return result;

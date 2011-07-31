@@ -6,7 +6,7 @@ import javax.management.ReflectionException;
 
 import basicparser.*;
 
-public class ExpressionVisitor implements BasicParserVisitor {
+public class ExpressionVisitor implements BasicParserGENVisitor {
 
 	@Override
 	public Object visit(SimpleNode node, Object data) {
