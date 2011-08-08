@@ -160,8 +160,13 @@ public class ExpressionVisitor implements BasicParserGENVisitor {
 
 	@Override
 	public Object visit(ASTArray node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+		String[] information = ((String [])(data));
+		String returnExpression = (String)(information[0]);
+		
+		for (int i = 1; i < information.length; i++ ) {
+			returnExpression += "[" + information[i] + ".getIntegerValue()" + "]";
+		}
+		return returnExpression;
 	}
 
 	@Override

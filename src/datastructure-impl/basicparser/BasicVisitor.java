@@ -7,15 +7,10 @@ import java.lang.RuntimeException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Stack;
+import java.util.Vector;
 
 import basicparser.*;
-import basicparser.ASTName;
 import basicparser.programflow.*;
-import basicparser.programflow.Assignment;
-import basicparser.programflow.Construct;
-import basicparser.programflow.ConstructContainer;
-import basicparser.programflow.Gosub;
-import basicparser.programflow.Loop;
 
 public class BasicVisitor implements BasicParserGENVisitor {
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
@@ -299,7 +294,7 @@ public class BasicVisitor implements BasicParserGENVisitor {
 				LinkedList<String> dimensions = new LinkedList<String>();
 				VariableTable.instance().getNumberArrays().put(digestName(numberIdentifier.value), dimensions);
 				for(ASTExpression parameter : currentArrayDeclaration.parameters) {
-					dimensions.add(ExpressionTranslator.instance().translate(parameter));
+					dimensions.addFirst(ExpressionTranslator.instance().translate(parameter));
 				}
 			}
 			
@@ -308,7 +303,7 @@ public class BasicVisitor implements BasicParserGENVisitor {
 				LinkedList<String> dimensions = new LinkedList<String>();
 				VariableTable.instance().getStringArrays().put(digestName(stringIdentifier.value), dimensions);
 				for(ASTExpression parameter : currentArrayDeclaration.parameters) {
-					dimensions.add(ExpressionTranslator.instance().translate(parameter));
+					dimensions.addFirst(ExpressionTranslator.instance().translate(parameter));
 				}
 			}
 			
@@ -397,8 +392,16 @@ public class BasicVisitor implements BasicParserGENVisitor {
 			//todo : arrays, positions need to be introduced to assignment class for array assignments
 			// ie : arr[0,3] = 0; //// atm only "arr" the name and "0" the expression are stored
 			assignment.setNature(Assignment.Nature.Array);
+			Vector<ASTExpression> position = new Vector<ASTExpression>();
+			for (int i = 1; i < variable.jjtGetNumChildren();i++) {
+				position.add((ASTExpression)variable.jjtGetChild(i));
+			}
+			assignment.setPositions(position);
 			String name = digestName(getName((ASTName) variable.jjtGetChild(0)));
-			throw new RuntimeException("Not implemented");
+			assignment.setName(name);
+			assignment.setType(getNameType((ASTName)variable.jjtGetChild(0)));
+			assignment.setExpression((ASTExpression)node.children[1]);
+
 		}
 		else {
 			throw new UnknownChildException(variable);
