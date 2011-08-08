@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import basicparser.*;
 import basicparser.programflow.*;
+import basicparser.programflow.Input.InputInformation;
 
 public class BasicVisitor implements BasicParserGENVisitor {
 	private Stack<ConstructContainer> containerStack = new Stack<ConstructContainer>();
@@ -376,6 +377,23 @@ public class BasicVisitor implements BasicParserGENVisitor {
 	}
 
 	public Object visit(ASTinputStatement node, Object data) {
+		Input input = new Input();
+		input.setMsg(node.message);
+		for (Node currentInputVariable : node.children) {
+			if (currentInputVariable.jjtGetChild(0) instanceof ASTSimpleVariable) {
+				InputInformation newInputInfo = input.new InputInformation(getNameType((ASTName)currentInputVariable.jjtGetChild(0).jjtGetChild(0)), digestName(getName((ASTName) currentInputVariable.jjtGetChild(0).jjtGetChild(0))));
+				input.addInputInformation(newInputInfo);
+				
+			}
+			else if (currentInputVariable.jjtGetChild(0) instanceof ASTArray) {
+				InputInformation newInputInfo = input.new InputInformation(getNameType((ASTName)currentInputVariable.jjtGetChild(0).jjtGetChild(0)),
+						 digestName(getName((ASTName) currentInputVariable.jjtGetChild(0).jjtGetChild(0))));
+			}
+
+			
+		}
+		input.digest();
+		pushOnTop(input);
 		return null;
 	}
 
@@ -389,8 +407,6 @@ public class BasicVisitor implements BasicParserGENVisitor {
 			assignment.setExpression((ASTExpression) node.children[1]);
 		}
 		else if(variable instanceof ASTArray) {
-			//todo : arrays, positions need to be introduced to assignment class for array assignments
-			// ie : arr[0,3] = 0; //// atm only "arr" the name and "0" the expression are stored
 			assignment.setNature(Assignment.Nature.Array);
 			Vector<ASTExpression> position = new Vector<ASTExpression>();
 			for (int i = 1; i < variable.jjtGetNumChildren();i++) {

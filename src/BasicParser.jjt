@@ -819,9 +819,11 @@ void initStatement():
 }
 
 void inputStatement():
-{}
 {
-	<INPUT> (<STRING_LITERAL> <SEMICOLON>)? Name() ( "," Name())*
+	Token t;	
+}
+{
+	<INPUT> (t=<STRING_LITERAL> {jjtThis.message = t.image;} <SEMICOLON>)? Variable() ( "," Variable())*
 }
 
 void letStatement():

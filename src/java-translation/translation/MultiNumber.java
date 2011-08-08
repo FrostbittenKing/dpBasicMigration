@@ -25,6 +25,17 @@ public class MultiNumber {
 		this.dvalue = value;
 		isDouble = true;
 	}
+	
+	public MultiNumber(String value) {
+		try {
+			this.ivalue = Integer.parseInt(value);
+			isDouble = false;
+		}
+		catch (NumberFormatException e) {
+			this.dvalue = Double.parseDouble(value);
+			isDouble = true;
+		}
+	}
 
 	public MultiNumber(boolean value) {
 		if (value) {

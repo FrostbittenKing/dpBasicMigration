@@ -4,6 +4,7 @@ package basicparser;
 
 public
 class ASTinputStatement extends SimpleNode {
+	public String message;
   public ASTinputStatement(int id) {
     super(id);
   }

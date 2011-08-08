@@ -95,6 +95,7 @@ public class ProgramGraph implements ConstructContainer {
 				"import java.util.Stack;" + LINE_SEPARATOR +
 				"import translation.MultiNumber;" + LINE_SEPARATOR +
 				"import translation.BasicEmu;" + LINE_SEPARATOR + 
+				"import java.util.Scanner;" + LINE_SEPARATOR + 
 				LINE_SEPARATOR +
 				"public class Main {" + LINE_SEPARATOR +
 				"\tprivate static Main instance;" + LINE_SEPARATOR +
@@ -115,7 +116,8 @@ public class ProgramGraph implements ConstructContainer {
 				"\t\t\tinstance = new Main();" + LINE_SEPARATOR +
 				"\t\t}" + LINE_SEPARATOR +
 				"\t\treturn instance;" + LINE_SEPARATOR +
-				"\t}" + LINE_SEPARATOR;
+				"\t}" + LINE_SEPARATOR +
+				"\t static Scanner sc;" + LINE_SEPARATOR;
 		String nextMethodCallNameDecl = "private String " + makeNextCallMethodNameAssignment(getGoMethodFromLabel(heads.getFirst().getLabel())) + LINE_SEPARATOR;
 		String returnCallMethodNameStackDecl = "private Stack<String> returnCallMethodNameStack = new Stack<String>();";
 		String footer =
