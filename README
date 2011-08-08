@@ -1,0 +1,12 @@
+This is a basic to Java Translator.
+It translates C7420 Videopac+ Basic Code to Java 1.6.
+At the moment, only the most important commands are translated
+
+How to use:
+ - Build script with several targets
+ - ant compile: compiles the parser code
+ - ant quickrun: starts the parser and waits for input
+   * terminate with ctrl+D in linux, or ctrl+Z in windows(probably)
+ - ant run-translate: compiles the the generated javacode
+ - ant run-java: compiles and runs the generated javacode
+ - ant clean: deletes everything generated
